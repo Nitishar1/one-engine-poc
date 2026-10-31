@@ -1,0 +1,40 @@
+/* Tailwind without preflight so it does not fight Ant Design's own reset. */
+@layer theme, base, antd, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@theme inline {
+  --color-primary: var(--oe-primary);
+  --color-primary-soft: var(--oe-primary-soft);
+  --color-on-primary: var(--oe-on-primary);
+  --color-secondary: var(--oe-secondary);
+  --color-surface-glass: var(--oe-surface-glass);
+  --color-link: var(--oe-link);
+  --color-bg: var(--oe-background);
+  --color-surface: var(--oe-surface);
+  --color-surface-alt: var(--oe-surface-alt);
+  --color-surface-elevated: var(--oe-surface-elevated);
+  --color-surface-sunken: var(--oe-surface-sunken);
+  --color-sidebar: var(--oe-sidebar-bg);
+  --color-header: var(--oe-header-bg);
+  --color-fg: var(--oe-text-primary);
+  --color-fg-secondary: var(--oe-text-secondary);
+  --color-fg-muted: var(--oe-text-muted);
+  --color-line: var(--oe-border);
+  --color-line-strong: var(--oe-border-strong);
+  --color-hover: var(--oe-hover);
+  --color-active: var(--oe-active);
+  --color-success: var(--oe-success);
+  --color-warning: var(--oe-warning);
+  --color-danger: var(--oe-error);
+  --color-info: var(--oe-info);
+  --shadow-sm: var(--oe-shadow-sm);
+  --shadow-card: var(--oe-shadow);
+  --shadow-pop: var(--oe-shadow-strong);
+  --shadow-glow: var(--oe-glow);
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-display: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}

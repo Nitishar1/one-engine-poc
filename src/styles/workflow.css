@@ -1,0 +1,526 @@
+/* Runbook builder and topology graphs (React Flow). */
+
+.oe-flow {
+  --xy-background-color: transparent;
+  --xy-node-boxshadow-selected-default: none;
+  --xy-selection-background-color: color-mix(in srgb, var(--oe-primary) 8%, transparent);
+  --xy-selection-border-default: 1px dashed color-mix(in srgb, var(--oe-primary) 60%, transparent);
+}
+
+/* Canvas surface: base colour with soft blue lighting from above. */
+.oe-flow-canvas {
+  background: var(--oe-canvas-glow), var(--oe-canvas-bg);
+}
+
+.oe-flow .react-flow__pane {
+  cursor: default;
+}
+
+.oe-flow .react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+/* ------------------------------------------------------------------ */
+/* Type tile (palette, properties drawer)                              */
+/* ------------------------------------------------------------------ */
+.oe-type-tile {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  color: var(--accent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--accent) 22%, transparent),
+    color-mix(in srgb, var(--accent) 8%, transparent)
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent);
+  transition: transform var(--oe-duration) var(--oe-ease);
+}
+
+.group:hover .oe-type-tile {
+  transform: scale(1.08);
+}
+
+/* ------------------------------------------------------------------ */
+/* Nodes                                                               */
+/* ------------------------------------------------------------------ */
+@keyframes oe-node-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+.oe-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--oe-node-text);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent 60%),
+    var(--oe-node-bg);
+  border: 1px solid var(--oe-node-border);
+  box-shadow: var(--oe-shadow-sm);
+  /* `backwards` so the entrance never pins the transform used by hover. */
+  animation: oe-node-in 0.24s var(--oe-ease) backwards;
+  transition:
+    border-color var(--oe-duration) var(--oe-ease),
+    box-shadow var(--oe-duration) var(--oe-ease),
+    transform var(--oe-duration) var(--oe-ease);
+}
+
+/* Type-coloured accent along the top edge of step cards. */
+.oe-node--box::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 20%, transparent)
+  );
+  opacity: 0.85;
+}
+
+.react-flow__node:hover .oe-node {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--oe-node-border));
+  box-shadow:
+    var(--oe-shadow),
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+  transform: translateY(-1px);
+}
+
+.react-flow__node.dragging .oe-node {
+  box-shadow: var(--oe-shadow-strong);
+  transform: none;
+}
+
+.oe-node--box {
+  /* Narrow enough that runbooks laid out for the earlier, smaller nodes don't overlap. */
+  width: 184px;
+  padding: 10px 14px 10px 10px;
+  border-radius: 10px;
+}
+
+.oe-node--pill {
+  height: 34px;
+  min-width: 96px;
+  padding: 0 16px 0 12px;
+  gap: 8px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  justify-content: center;
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--oe-node-border));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent 80%),
+    var(--oe-node-bg);
+}
+
+.oe-node.is-selected {
+  border-color: var(--oe-primary);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--oe-primary) 22%, transparent),
+    0 12px 32px -12px color-mix(in srgb, var(--oe-primary) 55%, transparent),
+    var(--oe-shadow);
+}
+
+.oe-node.is-invalid {
+  border-color: var(--oe-error);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--oe-error) 18%, transparent),
+    var(--oe-shadow-sm);
+}
+
+.oe-node__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  align-self: flex-start;
+  color: var(--accent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--accent) 24%, transparent),
+    color-mix(in srgb, var(--accent) 8%, transparent)
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent);
+  transition:
+    color var(--oe-duration) var(--oe-ease),
+    background var(--oe-duration) var(--oe-ease);
+}
+
+/* Selected step: the icon tile fills with its accent. */
+.oe-node.is-selected .oe-node__icon {
+  color: #fff;
+  background: linear-gradient(
+    145deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 65%, #1e3a8a)
+  );
+}
+
+.oe-node__kind {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--oe-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oe-node__label {
+  margin-top: 1px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oe-node__subtitle {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--oe-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oe-node__subtitle code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Hover affordance: open the step's configuration without selecting it first. */
+.oe-node__configure {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--oe-border);
+  background: var(--oe-surface-elevated);
+  color: var(--oe-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity var(--oe-duration-fast) var(--oe-ease),
+    transform var(--oe-duration-fast) var(--oe-ease),
+    color var(--oe-duration-fast) var(--oe-ease);
+}
+
+.react-flow__node:hover .oe-node__configure,
+.oe-node__configure:focus-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.oe-node__configure:hover {
+  color: var(--oe-primary);
+  border-color: color-mix(in srgb, var(--oe-primary) 35%, transparent);
+}
+
+.oe-node__warning {
+  flex-shrink: 0;
+  color: var(--oe-error);
+}
+
+/* Status dot on Start / End pills. */
+.oe-node__pulse {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.oe-node__pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: oe-ping 2s var(--oe-ease) infinite;
+}
+
+.oe-node__handle-label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--oe-text-muted);
+}
+
+/* Handles */
+.oe-flow .react-flow__handle {
+  width: 9px;
+  height: 9px;
+  min-width: 0;
+  min-height: 0;
+  border: 1.5px solid var(--oe-node-bg);
+  background: var(--oe-text-muted);
+  box-shadow: 0 0 0 1px var(--oe-border-strong);
+  transition:
+    transform var(--oe-duration-fast) var(--oe-ease),
+    background var(--oe-duration-fast) var(--oe-ease),
+    box-shadow var(--oe-duration-fast) var(--oe-ease);
+}
+
+.oe-flow .react-flow__handle:hover,
+.oe-flow .react-flow__handle.connectingfrom,
+.oe-flow .react-flow__handle.valid {
+  background: var(--oe-primary);
+  box-shadow:
+    0 0 0 1px var(--oe-primary),
+    0 0 0 4px color-mix(in srgb, var(--oe-primary) 22%, transparent);
+  transform: translate(var(--oe-handle-x, 0), -50%) scale(1.35);
+}
+
+.oe-flow .react-flow__handle-left {
+  --oe-handle-x: -50%;
+}
+
+.oe-flow .react-flow__handle-right {
+  --oe-handle-x: 50%;
+}
+
+.oe-flow .oe-node.is-selected .react-flow__handle {
+  background: var(--oe-primary);
+}
+
+/* Contextual node toolbar */
+.oe-node-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 9px;
+  border: 1px solid var(--oe-border-strong);
+  background: var(--oe-surface-glass);
+  backdrop-filter: saturate(170%) blur(12px);
+  -webkit-backdrop-filter: saturate(170%) blur(12px);
+  box-shadow: var(--oe-shadow-strong);
+  /* Opacity only: React Flow positions the toolbar with an inline transform. */
+  animation: oe-fade-in 0.14s var(--oe-ease) both;
+}
+
+/* ------------------------------------------------------------------ */
+/* Edges                                                               */
+/* ------------------------------------------------------------------ */
+.oe-flow .react-flow__edge-path,
+.oe-flow .react-flow__connection-path {
+  stroke: var(--oe-edge);
+  stroke-width: 1.5;
+}
+
+.oe-flow .react-flow__edge-path {
+  transition:
+    stroke var(--oe-duration) var(--oe-ease),
+    stroke-width var(--oe-duration) var(--oe-ease);
+}
+
+.oe-flow .react-flow__edge:hover .react-flow__edge-path {
+  stroke: color-mix(in srgb, var(--oe-edge-active) 65%, var(--oe-edge));
+  stroke-width: 2;
+}
+
+/* Edges touching the selected step light up. */
+.oe-flow .react-flow__edge-path.oe-edge.is-selected,
+.oe-flow .react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--oe-edge-active);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--oe-edge-active) 70%, transparent));
+  animation: oe-edge-flow 0.6s linear infinite;
+}
+
+/* Connections into / out of the selected step: lit and flowing in their direction. */
+.oe-flow .react-flow__edge-path.oe-edge.is-flowing {
+  stroke: color-mix(in srgb, var(--oe-edge-active) 75%, var(--oe-edge));
+  stroke-width: 1.75;
+  stroke-dasharray: 5 5;
+  animation: oe-edge-flow 0.9s linear infinite;
+}
+
+.oe-arrowhead {
+  fill: var(--oe-edge);
+  transition: fill var(--oe-duration) var(--oe-ease);
+}
+
+.oe-arrowhead.is-active {
+  fill: var(--oe-edge-active);
+}
+
+/* Edge being dragged out of a handle. */
+.oe-flow .react-flow__connection-path {
+  stroke: var(--oe-secondary);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+  animation: oe-edge-flow 0.5s linear infinite;
+}
+
+@keyframes oe-edge-flow {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+.oe-flow .react-flow__arrowhead polyline {
+  stroke: var(--oe-edge);
+  fill: var(--oe-edge);
+}
+
+/* ------------------------------------------------------------------ */
+/* Minimap, controls, attribution                                      */
+/* ------------------------------------------------------------------ */
+.oe-flow .react-flow__minimap {
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--oe-border-strong);
+  box-shadow: var(--oe-shadow);
+  opacity: 0.92;
+  transition: opacity var(--oe-duration) var(--oe-ease);
+}
+
+.oe-flow .react-flow__minimap:hover {
+  opacity: 1;
+}
+
+.oe-flow .react-flow__controls {
+  overflow: hidden;
+  border-radius: 9px;
+  border: 1px solid var(--oe-border-strong);
+  box-shadow: var(--oe-shadow);
+}
+
+.oe-flow .react-flow__controls-button {
+  width: 30px;
+  height: 30px;
+  background: var(--oe-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--oe-text-secondary);
+  fill: var(--oe-text-secondary);
+  border-bottom: 1px solid var(--oe-border);
+  transition: background var(--oe-duration-fast) var(--oe-ease);
+}
+
+.oe-flow .react-flow__controls-button:hover {
+  background: var(--oe-primary-soft);
+  color: var(--oe-primary);
+  fill: var(--oe-primary);
+}
+
+.oe-flow .react-flow__controls-button:last-child {
+  border-bottom: 0;
+}
+
+.oe-flow .react-flow__attribution {
+  background: transparent;
+}
+
+/* Properties drawer rendered inside the canvas container */
+.oe-properties-drawer.ant-drawer {
+  position: absolute;
+}
+
+.oe-properties-drawer .ant-drawer-section {
+  box-shadow: var(--oe-shadow-strong);
+}
+
+/* ------------------------------------------------------------------ */
+/* Read-only topology graph (CI relationships)                         */
+/* ------------------------------------------------------------------ */
+.oe-topology-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 200px;
+  padding: 9px 12px 9px 9px;
+  border-radius: 10px;
+  text-align: left;
+  color: var(--oe-node-text);
+  background: var(--oe-node-bg);
+  border: 1px solid var(--oe-node-border);
+  box-shadow: var(--oe-shadow-sm);
+  transition:
+    border-color var(--oe-duration) var(--oe-ease),
+    box-shadow var(--oe-duration) var(--oe-ease);
+}
+
+.react-flow__node:hover .oe-topology-node,
+.react-flow__node.selected .oe-topology-node {
+  border-color: color-mix(in srgb, var(--oe-primary) 40%, var(--oe-node-border));
+  box-shadow: var(--oe-shadow);
+}
+
+.react-flow__node.selected .oe-topology-node {
+  border-color: var(--oe-primary);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--oe-primary) 20%, transparent),
+    var(--oe-shadow);
+}
+
+.oe-topology-graph .react-flow__node-default {
+  padding: 0;
+  width: auto;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.oe-topology-graph .react-flow__edge-path {
+  stroke-dasharray: none;
+  animation: none;
+}
+
+.oe-topology-graph .react-flow__edge.animated .react-flow__edge-path {
+  stroke-dasharray: 5 4;
+  animation: oe-edge-flow 0.8s linear infinite;
+}
+
+.oe-topology-graph .react-flow__edge-textbg {
+  fill: var(--oe-surface-elevated);
+  stroke: var(--oe-border-strong);
+}
+
+.oe-topology-graph .react-flow__edge-text {
+  fill: var(--oe-text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oe-flow .react-flow__edge-path,
+  .oe-flow .react-flow__connection-path,
+  .oe-node,
+  .oe-node__pulse::after {
+    animation: none !important;
+  }
+}

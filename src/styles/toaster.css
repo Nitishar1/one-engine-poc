@@ -1,0 +1,137 @@
+/* Toast stack rendered by components/feedback/Toaster.tsx */
+
+@keyframes oe-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes oe-toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(16px) scale(0.98);
+  }
+}
+
+@keyframes oe-toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.oe-toaster {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2100;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.oe-toast {
+  --tone: var(--oe-info);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 10px 12px 12px;
+  overflow: hidden;
+  border-radius: 10px;
+  pointer-events: auto;
+  color: var(--oe-text-primary);
+  background: var(--oe-surface-elevated);
+  border: 1px solid var(--oe-border-strong);
+  box-shadow: var(--oe-shadow-strong);
+  animation: oe-toast-in 0.26s var(--oe-ease) both;
+}
+
+.oe-toast.is-leaving {
+  animation: oe-toast-out 0.2s ease-in forwards;
+}
+
+.oe-toast--success {
+  --tone: var(--oe-success);
+}
+.oe-toast--error {
+  --tone: var(--oe-error);
+}
+.oe-toast--warning {
+  --tone: var(--oe-warning);
+}
+.oe-toast--info {
+  --tone: var(--oe-info);
+}
+
+.oe-toast__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--tone);
+}
+
+.oe-toast__title {
+  margin: 0 0 1px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.oe-toast__body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--oe-text-secondary);
+  word-break: break-word;
+}
+
+.oe-toast__close {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--oe-text-muted);
+  background: transparent;
+  transition:
+    background var(--oe-duration-fast),
+    color var(--oe-duration-fast);
+}
+
+.oe-toast__close:hover {
+  color: var(--oe-text-primary);
+  background: var(--oe-hover);
+}
+
+.oe-toast__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  transform-origin: left;
+  background: color-mix(in srgb, var(--tone) 70%, transparent);
+  animation-name: oe-toast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@media (max-width: 640px) {
+  .oe-toaster {
+    right: 16px;
+    bottom: 16px;
+  }
+}
