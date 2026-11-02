@@ -1,6 +1,7 @@
 /** Canonical route paths. Use these instead of string literals in components. */
 export const ROUTES = {
   login: '/auth/login',
+  reference: '/ref',
   home: '/home',
   ciType: '/ci-mapping/ci-type',
   ciTypeNew: '/ci-mapping/ci-type/new',

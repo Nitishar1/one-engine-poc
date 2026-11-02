@@ -84,6 +84,10 @@ export const routes: RouteObject[] = [
     children: [
       { path: ROUTES.login, element: page(() => import('@/features/auth/pages/LoginPage')) },
       {
+        path: ROUTES.reference,
+        element: page(() => import('@/features/reference/pages/ReferencePage')),
+      },
+      {
         element: <ProtectedRoute />,
         children: [
           {
