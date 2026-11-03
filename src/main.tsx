@@ -1,3 +1,6 @@
+// Must stay first: installs React Fast Refresh even when the preamble Vite injects into
+// index.html doesn't run (blocked inline scripts, HTML not served by Vite).
+import '@vitejs/plugin-react/preamble';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import dayjs from 'dayjs';
