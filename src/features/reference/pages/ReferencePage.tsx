@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Checkbox, Input } from 'antd';
-import { ArrowLeft, ArrowRight, BookOpen, Check, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Check, Copy, Search } from 'lucide-react';
 import { AppButton } from '@/components/common/AppButton';
+import { toast } from '@/components/feedback/toastStore';
 import { BrandMark } from '@/components/layout/BrandMark';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { ROUTES } from '@/config/routes';
@@ -62,6 +63,16 @@ export default function ReferencePage() {
     const target = index + delta;
     if (target < 0) open();
     else if (target < SOURCE_FILES.length) open(SOURCE_FILES[target].path);
+  };
+
+  const copy = async () => {
+    if (!file) return;
+    try {
+      await navigator.clipboard.writeText(file.content);
+      void toast.success(`Copied ${file.path}`);
+    } catch {
+      void toast.error('Clipboard is not available');
+    }
   };
 
   useHotkey('ArrowRight', () => step(1));
@@ -203,6 +214,9 @@ export default function ReferencePage() {
                     ` · ${countSpecialChars(file.content)} special characters`}
                 </span>
                 <div className="ml-auto flex gap-2">
+                  <AppButton tone="secondary" icon={<Copy size={15} />} onClick={copy}>
+                    Copy
+                  </AppButton>
                   <AppButton
                     tone="secondary"
                     icon={<ArrowLeft size={15} />}
