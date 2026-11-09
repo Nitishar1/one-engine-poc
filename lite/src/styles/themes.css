@@ -611,7 +611,8 @@
     background var(--oe-duration) var(--oe-ease);
 }
 
-.ant-input-prefix {
+.ant-input-prefix,
+.ant-select-prefix {
   color: var(--oe-text-muted);
   margin-inline-end: 8px !important;
   transition: color var(--oe-duration) var(--oe-ease);
