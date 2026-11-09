@@ -18,7 +18,7 @@ export const aiModelSchema = z.object({
   name: requiredText('Model Name', 80),
   provider: z.enum(AI_PROVIDERS, { error: 'Provider is required' }),
   modelId: requiredText('Model Id', 120),
-  endpoint: z.url({ error: 'Enter a valid endpoint URL' }),
+  endpoint: z.url({ protocol: /^https?$/, error: 'Enter a valid http(s) endpoint URL' }),
   maxTokens: z.number({ error: 'Max Tokens is required' }).int().min(1).max(200000),
   temperature: z.number({ error: 'Temperature is required' }).min(0).max(2),
   status: z.enum(['Active', 'Inactive']),

@@ -5,6 +5,6 @@ import type { ExecutionReportFilters } from '../types/report.types';
 export const useExecutionReport = (filters: ExecutionReportFilters) =>
   useQuery({
     queryKey: ['reports', 'executions', filters],
-    queryFn: () => reportService.getExecutions(filters),
+    queryFn: ({ signal }) => reportService.getExecutions(filters, { signal }),
     placeholderData: keepPreviousData,
   });

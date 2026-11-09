@@ -4,6 +4,7 @@ import { Bot, Network, Workflow } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { ROUTES } from '@/config/routes';
 import { APP_CONFIG } from '@/utils/constants';
+import { isSafeRedirect } from '@/utils/helpers';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { BrandMark } from '@/components/layout/BrandMark';
 import { LoginForm } from '../components/LoginForm';
@@ -80,7 +81,9 @@ export default function LoginPage() {
     document.title = `Sign in · ${APP_CONFIG.name}`;
   }, []);
 
-  if (status === 'authenticated') return <Navigate to={from ?? ROUTES.home} replace />;
+  if (status === 'authenticated') {
+    return <Navigate to={isSafeRedirect(from) ? from : ROUTES.home} replace />;
+  }
 
   return (
     <div className="grid min-h-screen bg-bg text-fg lg:grid-cols-[minmax(0,1.1fr)_minmax(480px,1fr)]">

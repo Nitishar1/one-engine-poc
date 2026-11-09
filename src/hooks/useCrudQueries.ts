@@ -18,12 +18,13 @@ export function createCrudHooks<T extends BaseEntity>(
     detail: (id: EntityId) => [resourceKey, id] as const,
   };
 
-  const useList = () => useQuery({ queryKey: keys.all, queryFn: service.list });
+  const useList = () =>
+    useQuery({ queryKey: keys.all, queryFn: ({ signal }) => service.list({ signal }) });
 
   const useDetail = (id?: EntityId) =>
     useQuery({
       queryKey: keys.detail(id ?? ''),
-      queryFn: () => service.get(id as EntityId),
+      queryFn: ({ signal }) => service.get(id as EntityId, { signal }),
       enabled: Boolean(id),
     });
 

@@ -31,3 +31,9 @@ export class ApiError extends Error {
     this.fieldErrors = fieldErrors;
   }
 }
+
+/** Per-request options accepted by the `http` helpers. */
+export interface RequestOptions {
+  /** Cancels the request, e.g. the `signal` TanStack Query passes to a `queryFn`. */
+  signal?: AbortSignal;
+}

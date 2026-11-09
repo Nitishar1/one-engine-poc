@@ -7,6 +7,6 @@ export const runbookHooks = createCrudHooks('runbooks', runbookService, 'Runbook
 export const useRunbookRoles = () =>
   useQuery({
     queryKey: ['runbooks', 'roles'],
-    queryFn: runbookService.getRoles,
+    queryFn: ({ signal }) => runbookService.getRoles({ signal }),
     staleTime: Infinity,
   });

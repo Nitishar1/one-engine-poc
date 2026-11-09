@@ -8,7 +8,11 @@ import type { ChangePasswordRequest, LoginRequest } from '../types/auth.types';
 import { toast } from '@/components/feedback/toastStore';
 
 export const useDomains = () =>
-  useQuery({ queryKey: ['auth', 'domains'], queryFn: authService.getDomains, staleTime: Infinity });
+  useQuery({
+    queryKey: ['auth', 'domains'],
+    queryFn: ({ signal }) => authService.getDomains({ signal }),
+    staleTime: Infinity,
+  });
 
 export function useLogin() {
   const setSession = useAuthStore((s) => s.setSession);

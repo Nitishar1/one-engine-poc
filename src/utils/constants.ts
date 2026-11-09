@@ -14,6 +14,7 @@ export const STORAGE_KEYS = {
   theme: 'oneengine-theme',
   sidebar: 'oneengine-sidebar',
   typingProgress: 'oneengine-typing-done',
+  signOut: 'oneengine-sign-out',
 } as const;
 
 export const DATE_TIME_FORMAT = 'DD-MM-YYYY HH:mm:ss';
