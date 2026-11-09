@@ -1,10 +1,5 @@
 import { AppCard } from '@/components/common/AppCard';
-import {
-  LITE_FILES,
-  LITE_FOLDER,
-  LITE_MKDIR_COMMAND,
-  LITE_NEW_FILES_COMMAND,
-} from '../utils/liteFiles';
+import { LITE_FILES, LITE_FILE_LINES, LITE_FOLDER, LITE_FOLDER_LINES } from '../utils/liteFiles';
 import { Code, Command, Step } from './GuideParts';
 
 const PAGES = [
@@ -81,18 +76,20 @@ export function LiteSetupGuide({
             <Command>{'node -v\nnpm -v'}</Command>
             Node must be <b>v22.12 or newer</b>.
           </Step>
-          <Step n={2} title="Create a new, empty project folder">
-            Start from scratch, separate from any older copy:
-            <Command>{`mkdir C:\\${LITE_FOLDER}\ncd C:\\${LITE_FOLDER}`}</Command>
-            Then open <b>PowerShell</b> in that folder and create all sub-folders at once:
-            <Command>{LITE_MKDIR_COMMAND}</Command>
-            Then, in the same PowerShell window, create all {LITE_FILES.length} files (empty) with
-            the names below. Type it exactly, one name per line, then press Enter after the last{' '}
-            <Code>)</Code> line. Files that already exist are left untouched, so it is safe to run
-            again:
-            <Command>{LITE_NEW_FILES_COMMAND}</Command>
-            Check with <Code>dir -Recurse -File -Name</Code>. Each file is now in place; open it in
-            your editor and fill in its content from the list on the left.
+          <Step n={2} title="Create the project folder, sub-folders and empty files">
+            Everything in this step runs in <b>Command Prompt</b> (the prompt looks like{' '}
+            <Code>{'C:\\>'}</Code>). If it starts with <Code>PS</Code> you are in PowerShell: type{' '}
+            <Code>cmd</Code> and press Enter first. Create the project folder and go into it:
+            <Command>{`mkdir C:\\${LITE_FOLDER}\ncd /d C:\\${LITE_FOLDER}`}</Command>
+            Create the sub-folders (parent folders are created too). Type each line and press Enter
+            after it; &quot;already exists&quot; is fine:
+            <Command>{LITE_FOLDER_LINES}</Command>
+            Create all {LITE_FILES.length} files (empty), again one line at a time:
+            <Command>{LITE_FILE_LINES}</Command>
+            <Code>{'>>'}</Code> (two arrows) only creates a missing file and never empties one you
+            already filled in, so a line typed twice does no harm. Check with{' '}
+            <Code>dir /s /b /a-d</Code>. Then open each file in your editor and fill in its content
+            from the list on the left.
           </Step>
           <Step n={3} title="Create package.json and install">
             Open <Code>package.json</Code> in the list on the left, create the file with exactly

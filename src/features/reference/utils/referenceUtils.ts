@@ -31,14 +31,33 @@ export function mkdirCommand(files: SourceFile[], extraDirs: string[] = []) {
     .join(', ')}`;
 }
 
+const toWindowsPath = (path: string) => path.replaceAll('/', '\\');
+
 /**
- * PowerShell command that creates every file (empty), one path per line in typing order. Run it
- * after the folders exist. Without -Force, New-Item never overwrites a file that already has
- * content; existing files are skipped silently.
+ * Command Prompt (cmd) lines that create every folder, one per line. Only the deepest folders
+ * are listed: cmd's mkdir creates the parent folders too.
  */
-export function newFilesCommand(files: SourceFile[]) {
-  const lines = files.map((f) => `  '${f.path.replaceAll('/', '\\')}'`).join('\n');
-  return `$files = @(\n${lines}\n)\nNew-Item -ItemType File -Path $files -ErrorAction SilentlyContinue | Out-Null`;
+export function cmdFolderLines(files: SourceFile[]) {
+  const dirs = [
+    ...new Set(
+      files
+        .filter((f) => f.path.includes('/'))
+        .map((f) => f.path.slice(0, f.path.lastIndexOf('/'))),
+    ),
+  ];
+  return dirs
+    .filter((dir) => !dirs.some((other) => other.startsWith(`${dir}/`)))
+    .sort()
+    .map((dir) => `mkdir ${toWindowsPath(dir)}`)
+    .join('\n');
+}
+
+/**
+ * Command Prompt (cmd) lines that create every file empty, one per line in typing order.
+ * `>>` appends nothing: it creates a missing file and never empties one that has content.
+ */
+export function cmdFileLines(files: SourceFile[]) {
+  return files.map(({ path }) => `type nul >> ${toWindowsPath(path)}`).join('\n');
 }
 
 /** How to type each non-ASCII character used in the sources on a Windows keyboard. */

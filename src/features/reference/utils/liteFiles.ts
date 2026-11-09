@@ -4,8 +4,8 @@
  */
 import {
   countLines,
-  mkdirCommand,
-  newFilesCommand,
+  cmdFileLines,
+  cmdFolderLines,
   type ReferenceGroup,
   type SourceFile,
 } from './referenceUtils';
@@ -160,6 +160,5 @@ export const LITE_GROUPS: ReferenceGroup[] = [
   { id: 'optional', label: 'Optional' },
 ];
 
-export const LITE_MKDIR_COMMAND = mkdirCommand(LITE_FILES);
-
-export const LITE_NEW_FILES_COMMAND = newFilesCommand(LITE_FILES);
+export const LITE_FOLDER_LINES = cmdFolderLines(LITE_FILES);
+export const LITE_FILE_LINES = cmdFileLines(LITE_FILES);
