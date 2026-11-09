@@ -6,6 +6,7 @@ export const loginSchema = z.object({
   username: identifier('User Name', 100),
   // Passwords are sent as typed (never trimmed or changed); only the length is checked.
   password: z.string().min(1, 'Password is required').max(128, 'Password is too long'),
+  acceptTerms: z.boolean().refine((v) => v, 'You must agree to the Terms and Conditions'),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
