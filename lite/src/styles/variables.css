@@ -1,0 +1,39 @@
+/*
+ * Layout, spacing, radius and motion tokens. Colour tokens are written at runtime by
+ * ThemeProvider from src/components/theme/themeTokens.ts (the single source of truth);
+ * the colour values below only cover the first paint before React mounts.
+ */
+:root {
+  --oe-sidebar-width: 248px;
+  --oe-sidebar-collapsed-width: 64px;
+  --oe-header-height: 56px;
+  --oe-page-padding: 28px;
+  --oe-page-max-width: 1440px;
+
+  --oe-radius-sm: 6px;
+  --oe-radius: 8px;
+  --oe-radius-lg: 12px;
+
+  --oe-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --oe-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --oe-duration-fast: 120ms;
+  --oe-duration: 180ms;
+  --oe-duration-slow: 280ms;
+
+  /* Glass: blur strengths. Blur is only used on chrome that floats over content. */
+  --oe-blur-sm: 8px;
+  --oe-blur: 16px;
+  --oe-blur-lg: 24px;
+
+  --oe-background: #060a14;
+  --oe-surface: #0b1120;
+  --oe-text-primary: #e7ecf5;
+  --oe-border: rgba(148, 170, 210, 0.1);
+}
+
+:root[data-theme='light'] {
+  --oe-background: #f5f7fb;
+  --oe-surface: #ffffff;
+  --oe-text-primary: #0f172a;
+  --oe-border: rgba(15, 23, 42, 0.08);
+}

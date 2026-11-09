@@ -1,23 +1,27 @@
-// Must stay first: lets React hot reload work even if the browser blocks inline scripts.
+// Must stay first: installs React Fast Refresh even when the preamble Vite injects into
+// index.html doesn't run (blocked inline scripts, HTML not served by Vite).
 import '@vitejs/plugin-react/preamble';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
-import { apiClient } from './api/client';
-import { config } from './config';
-import './styles.css';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { env } from '@/config/env';
+import { apiClient } from '@/services/api/axiosInstance';
+import App from '@/app/App';
+import '@/styles/globals.css';
 
-async function start() {
-  if (config.useMocks) {
-    // Answer API calls from src/mocks instead of the real backend.
-    const { mockAdapter } = await import('./mocks/mockApi');
-    apiClient.defaults.adapter = mockAdapter;
+dayjs.extend(customParseFormat);
+
+async function bootstrap() {
+  if (env.useMocks) {
+    const { enableMocks } = await import('@/mocks');
+    await enableMocks(apiClient);
   }
-  createRoot(document.getElementById('root')!).render(
+  createRoot(document.getElementById('root') as HTMLElement).render(
     <StrictMode>
       <App />
     </StrictMode>,
   );
 }
 
-void start();
+void bootstrap();

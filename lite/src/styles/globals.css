@@ -1,0 +1,154 @@
+@import './tailwind.css';
+@import './variables.css';
+@import './themes.css';
+@import './toaster.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--oe-background);
+  color: var(--oe-text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--oe-primary) 30%, transparent);
+}
+
+a {
+  color: var(--oe-link);
+  transition: color var(--oe-duration) var(--oe-ease);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--font-mono);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tailwind preflight is disabled (antd owns the reset), so native controls need these. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--oe-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Text fields show focus through their own border and ring (antd), not an extra outline. */
+input:focus-visible,
+textarea:focus-visible,
+.ant-select :focus-visible {
+  outline: none;
+}
+
+/* Brief colour cross-fade while switching themes; added/removed by ThemeProvider. */
+.oe-theme-transition,
+.oe-theme-transition *,
+.oe-theme-transition *::before,
+.oe-theme-transition *::after {
+  transition:
+    background-color 220ms var(--oe-ease),
+    border-color 220ms var(--oe-ease),
+    color 220ms var(--oe-ease),
+    fill 220ms var(--oe-ease) !important;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--oe-border-strong);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--oe-text-muted);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.oe-link {
+  color: var(--oe-text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color var(--oe-duration) var(--oe-ease),
+    text-decoration-color var(--oe-duration) var(--oe-ease);
+}
+
+.oe-link:hover {
+  color: var(--oe-link);
+  text-decoration-color: currentColor;
+}
+
+.oe-link-arrow::after {
+  content: '\2192';
+  transition: transform var(--oe-duration) var(--oe-ease);
+}
+
+.oe-link-arrow:hover::after {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
