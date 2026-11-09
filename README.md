@@ -13,24 +13,24 @@ npm run dev               # http://localhost:5173
 With `VITE_USE_MOCKS=true` (the default) the app runs fully in the browser against the mock API.
 Sign in with any domain, user name and password (the password `invalid` simulates a failed login).
 
-| Command             | Purpose                                 |
-| ------------------- | --------------------------------------- |
-| `npm run dev`       | Dev server with HMR                     |
-| `npm run build`     | Type-check and production build         |
-| `npm run preview`   | Serve the production build              |
-| `npm run lint`      | ESLint (incl. React Compiler hook rules)|
-| `npm run format`    | Prettier                                |
-| `npm test`          | Vitest + React Testing Library          |
+| Command           | Purpose                                  |
+| ----------------- | ---------------------------------------- |
+| `npm run dev`     | Dev server with HMR                      |
+| `npm run build`   | Type-check and production build          |
+| `npm run preview` | Serve the production build               |
+| `npm run lint`    | ESLint (incl. React Compiler hook rules) |
+| `npm run format`  | Prettier                                 |
+| `npm test`        | Vitest + React Testing Library           |
 
 ## Environment
 
-| Variable                         | Default                         | Notes                                                    |
-| -------------------------------- | ------------------------------- | -------------------------------------------------------- |
-| `VITE_API_BASE_URL`              | `/api`                          | Backend base URL; prefer a same-origin path              |
-| `VITE_USE_MOCKS`                 | `true` (dev) / `false` (build)  | `false` sends every request to the real backend          |
-| `VITE_ALLOW_MOCKS_IN_PRODUCTION` | `false`                         | Only for static demo builds; mocks accept any password   |
-| `VITE_API_TIMEOUT`               | `30000`                         | Request timeout (ms)                                     |
-| `API_PROXY_TARGET`               | —                               | Dev server only: backend that `/api` is proxied to       |
+| Variable                         | Default                        | Notes                                                  |
+| -------------------------------- | ------------------------------ | ------------------------------------------------------ |
+| `VITE_API_BASE_URL`              | `/api`                         | Backend base URL; prefer a same-origin path            |
+| `VITE_USE_MOCKS`                 | `true` (dev) / `false` (build) | `false` sends every request to the real backend        |
+| `VITE_ALLOW_MOCKS_IN_PRODUCTION` | `false`                        | Only for static demo builds; mocks accept any password |
+| `VITE_API_TIMEOUT`               | `30000`                        | Request timeout (ms)                                   |
+| `API_PROXY_TARGET`               | —                              | Dev server only: backend that `/api` is proxied to     |
 
 `VITE_*` values are bundled into the client — never put secrets in them.
 
@@ -50,7 +50,8 @@ CORS setup is needed. In production, serve the app and the API from the same ori
 
 ## OneEngine Lite (`lite/`)
 
-`lite/` is a separate, minimal app (login, a backend-driven menu and a Configurations page) with
+`lite/` is a separate, minimal app (login, a backend-driven menu, header, footer, light / dark
+theme and a Configurations page) with
 its own `package.json`; it does not share code with OneEngine. Run it with
 `cd lite && npm install && npm run dev` (http://localhost:5174); see `lite/README.md`.
 `/ref2` in this app shows its files in typing order for recreating it by hand.
@@ -110,15 +111,15 @@ src/
 
 ## Screens
 
-| Menu                              | Route                          | Status                    |
-| --------------------------------- | ------------------------------ | ------------------------- |
-| CIMapping › CI Type / Master / Relationship | `/ci-mapping/*`      | List + create/edit (+ graph view for relationships) |
-| Home                              | `/home`                        | Dashboard (KPIs, charts, recent executions) |
-| Agent Repository                  | `/agent-repository`            | Tabs, platform filter, cards, details drawer, create/edit |
-| Orchestrator › Runbook / Runbook List | `/orchestrator/*`          | Workflow builder + list   |
-| Reports › Execution Report        | `/reports/executions`          | Filters, grid, CSV export |
-| Agent Repository › AI Model / AIConfiguration / AI Agents | `/ai/*` | CRUD + agent workspace   |
-| Certificate Monitoring, India Cloud, Configurations, ITAssistant | — | Routed placeholder until designs are provided |
+| Menu                                                             | Route                 | Status                                                    |
+| ---------------------------------------------------------------- | --------------------- | --------------------------------------------------------- |
+| CIMapping › CI Type / Master / Relationship                      | `/ci-mapping/*`       | List + create/edit (+ graph view for relationships)       |
+| Home                                                             | `/home`               | Dashboard (KPIs, charts, recent executions)               |
+| Agent Repository                                                 | `/agent-repository`   | Tabs, platform filter, cards, details drawer, create/edit |
+| Orchestrator › Runbook / Runbook List                            | `/orchestrator/*`     | Workflow builder + list                                   |
+| Reports › Execution Report                                       | `/reports/executions` | Filters, grid, CSV export                                 |
+| Agent Repository › AI Model / AIConfiguration / AI Agents        | `/ai/*`               | CRUD + agent workspace                                    |
+| Certificate Monitoring, India Cloud, Configurations, ITAssistant | —                     | Routed placeholder until designs are provided             |
 
 ## Backend contract
 
@@ -135,20 +136,20 @@ shapes. AI agent runs (`POST /ai-agents/:id/run`) are simulated locally by the m
 
 What the client does (`src/services/api/axiosInstance.ts`):
 
-| Measure                | Detail                                                                              |
-| ---------------------- | ----------------------------------------------------------------------------------- |
-| Token storage          | Access token in memory only; session in an httpOnly cookie (`withCredentials`)       |
-| Token refresh          | Single-flight `GET /auth/session` on 401, one retry per request, then sign-out      |
-| CSRF                   | Echoes the `XSRF-TOKEN` cookie as `X-XSRF-TOKEN`; sends `X-Requested-With`           |
-| Path safety            | Ids are URL-encoded via `resourcePath()`; `.`/`..`/empty ids are rejected            |
-| Response validation    | Only JSON `{ success, data }` envelopes are accepted                                |
-| Error messages         | 5xx bodies are never shown; users get a generic message plus the request id         |
-| Tracing                | Every request carries a random `X-Request-Id`                                       |
-| Cancellation           | Queries pass TanStack Query's `AbortSignal`, so leaving a page aborts its requests  |
-| Session end            | Query cache is cleared; sign-out in one tab signs out every open tab                |
-| Redirects              | Post-login redirect only accepts in-app paths (blocks `//host`, `/\host`)            |
-| CSV export             | Formula-injection characters (`= + - @`) are neutralised                            |
-| Mocks                  | Never enabled in production builds unless explicitly allowed                        |
+| Measure             | Detail                                                                             |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| Token storage       | Access token in memory only; session in an httpOnly cookie (`withCredentials`)     |
+| Token refresh       | Single-flight `GET /auth/session` on 401, one retry per request, then sign-out     |
+| CSRF                | Echoes the `XSRF-TOKEN` cookie as `X-XSRF-TOKEN`; sends `X-Requested-With`         |
+| Path safety         | Ids are URL-encoded via `resourcePath()`; `.`/`..`/empty ids are rejected          |
+| Response validation | Only JSON `{ success, data }` envelopes are accepted                               |
+| Error messages      | 5xx bodies are never shown; users get a generic message plus the request id        |
+| Tracing             | Every request carries a random `X-Request-Id`                                      |
+| Cancellation        | Queries pass TanStack Query's `AbortSignal`, so leaving a page aborts its requests |
+| Session end         | Query cache is cleared; sign-out in one tab signs out every open tab               |
+| Redirects           | Post-login redirect only accepts in-app paths (blocks `//host`, `/\host`)          |
+| CSV export          | Formula-injection characters (`= + - @`) are neutralised                           |
+| Mocks               | Never enabled in production builds unless explicitly allowed                       |
 
 What the backend must do:
 

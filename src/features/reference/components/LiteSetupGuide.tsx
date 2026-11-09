@@ -14,7 +14,7 @@ export function LiteSetupGuide({
     <div className="flex max-w-4xl flex-col gap-5">
       <AppCard
         title="Create OneEngine Lite on the lab laptop"
-        description={`A new, separate project: login, a menu from the backend and a Configurations page. ${requiredFiles} files, ${requiredLines.toLocaleString()} lines.`}
+        description={`A new, separate project: login, a menu from the backend, header, footer, light / dark theme and a Configurations page. ${requiredFiles} files, ${requiredLines.toLocaleString()} lines.`}
       >
         <ol className="m-0 flex list-none flex-col gap-5 p-0">
           <Step n={1} title="Check Node.js">
@@ -66,6 +66,15 @@ export function LiteSetupGuide({
             The menu comes from <Code>GET /menus</Code>. To add a page: create the component and add
             its path to <Code>src/pages/index.ts</Code>; until then the menu item shows "coming
             soon".
+          </li>
+          <li>
+            Light / dark theme: the sun / moon button in the header (and on the login page). The
+            choice is saved in the browser. Ant Design switches its own colours; the layout colours
+            are the variables at the top of <Code>src/styles.css</Code>.
+          </li>
+          <li>
+            The footer shows a <b>Mock data</b> tag while <Code>VITE_USE_MOCKS=true</Code>, so it is
+            always clear whether the app is using the real backend.
           </li>
           <li>
             In mock mode, data lives in memory: changes on the Configurations page reset when you

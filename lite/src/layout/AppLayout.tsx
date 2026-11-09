@@ -1,14 +1,13 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Alert, Avatar, Button, Dropdown, Layout, Menu, Spin } from 'antd';
-import { LogOut } from 'lucide-react';
+import { Alert, Button, Layout, Menu, Spin } from 'antd';
 import { menuApi } from '../api/menuApi';
-import { useAuth } from '../auth/AuthContext';
 import { useApi } from '../hooks/useApi';
+import { AppFooter } from './AppFooter';
+import { AppHeader } from './AppHeader';
 import { groupKeys, menuPages, toMenuItems } from './menu';
 
-/** Sidebar (menu from the backend), top bar with the user, and the current page. */
+/** Sidebar (menu from the backend), header, the current page and footer. */
 export function AppLayout() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const menus = useApi(menuApi.list);
@@ -44,24 +43,12 @@ export function AppLayout() {
         />
       </Layout.Sider>
       <Layout>
-        <Layout.Header className="app-header">
-          <span className="app-header-title">{current?.label}</span>
-          <Dropdown
-            menu={{
-              items: [{ key: 'logout', label: 'Sign out', icon: <LogOut size={14} /> }],
-              onClick: () => void logout(),
-            }}
-          >
-            <Button type="text">
-              <Avatar size="small">{user?.displayName.charAt(0).toUpperCase()}</Avatar>
-              {user?.displayName}
-            </Button>
-          </Dropdown>
-        </Layout.Header>
+        <AppHeader title={current?.label} />
         <Layout.Content className="app-content">
           {/* The pages get the menu so they can check the URL against it. */}
           <Outlet context={menus.data} />
         </Layout.Content>
+        <AppFooter />
       </Layout>
     </Layout>
   );

@@ -1,6 +1,7 @@
 # OneEngine Lite
 
-Login, a sidebar menu that comes from the backend, and a Configurations page.
+Login, a sidebar menu that comes from the backend, a header and footer, a light / dark theme,
+and a Configurations page.
 React + TypeScript + Vite + Ant Design.
 
 In the OneEngine repo this app lives in `lite/`; run the commands below inside that folder.
@@ -42,7 +43,9 @@ src/
   mocks/            fake backend (same URLs and responses as the real one)
   auth/             who is signed in (AuthContext) and the route guard
   hooks/useApi.ts   load data with loading / error / reload
-  layout/           sidebar + header; menu.tsx turns backend menus into antd items
+  theme/            light / dark theme (ThemeContext) and the switch button
+  layout/           AppLayout (sidebar + page), AppHeader, AppFooter;
+                    menu.tsx turns backend menus into antd items
   pages/            LoginPage, MenuPage (picks the page for the URL), configurations/
 ```
 

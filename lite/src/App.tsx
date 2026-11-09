@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { App as AntApp, ConfigProvider } from 'antd';
+import { App as AntApp } from 'antd';
 import { AuthProvider } from './auth/AuthContext';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import { MenuPage } from './pages/MenuPage';
+import { ThemeProvider } from './theme/ThemeContext';
 
 export default function App() {
   return (
-    <ConfigProvider theme={{ token: { colorPrimary: '#2563eb', borderRadius: 8 } }}>
+    <ThemeProvider>
       {/* AntApp lets pages show messages with App.useApp(). */}
       <AntApp>
         <AuthProvider>
@@ -22,6 +23,6 @@ export default function App() {
           </BrowserRouter>
         </AuthProvider>
       </AntApp>
-    </ConfigProvider>
+    </ThemeProvider>
   );
 }

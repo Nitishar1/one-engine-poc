@@ -1,8 +1,24 @@
 /* Only layout rules live here; Ant Design styles its own components (inputs, dropdowns...). */
 
+/* Theme colours for the layout. ThemeContext sets data-theme="dark" on <html>. */
+:root {
+  --app-bg: #f5f7fb;
+  --app-surface: #ffffff;
+  --app-border: #e5e7eb;
+  --app-text-muted: #6b7280;
+}
+
+html[data-theme='dark'] {
+  --app-bg: #0b1120;
+  --app-surface: #111827;
+  --app-border: #1f2937;
+  --app-text-muted: #9ca3af;
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
-  background: #f5f7fb;
+  background: var(--app-bg);
 }
 
 .centered {
@@ -15,6 +31,7 @@ body {
 
 /* Login */
 .login-page {
+  position: relative;
   display: flex;
   min-height: 100vh;
   align-items: center;
@@ -28,13 +45,27 @@ body {
   max-width: 400px;
 }
 
+.login-card h3 {
+  margin-top: 0;
+}
+
 .login-card .ant-alert {
   margin-bottom: 16px;
 }
 
+/* The page background is dark in both themes, so the button is always white. */
+.login-theme-toggle.ant-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: #fff;
+}
+
 /* App shell */
-.app {
+.app,
+.app .ant-layout {
   min-height: 100vh;
+  background: var(--app-bg);
 }
 
 .brand {
@@ -50,8 +81,8 @@ body {
   justify-content: space-between;
   gap: 16px;
   padding: 0 24px;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .app-header-title {
@@ -59,8 +90,27 @@ body {
   font-weight: 600;
 }
 
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .app-content {
   padding: 24px;
+}
+
+.app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--app-surface);
+  border-top: 1px solid var(--app-border);
+  color: var(--app-text-muted);
+  font-size: 13px;
 }
 
 /* Pages */

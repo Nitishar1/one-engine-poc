@@ -5,6 +5,7 @@ import { authApi } from '../api/authApi';
 import type { LoginRequest } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { useApi } from '../hooks/useApi';
+import { ThemeToggle } from '../theme/ThemeToggle';
 
 /** Only redirect back to paths inside this app (blocks `//other-site.com` tricks). */
 const isSafePath = (path: unknown): path is string =>
@@ -36,6 +37,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
+      <ThemeToggle className="login-theme-toggle" />
       <Card className="login-card">
         <Typography.Title level={3}>Sign in to OneEngine</Typography.Title>
 
