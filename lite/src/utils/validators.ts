@@ -83,3 +83,13 @@ export const connectionString = cleanText().pipe(
       'Use key=value pairs separated by semicolons (see the sample below)',
     ),
 );
+
+/** New passwords: 8-128 characters with upper and lower case letters, a number and a symbol. */
+export const strongPassword = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(128, 'Password must be at most 128 characters')
+  .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+  .regex(/[a-z]/, 'Password must contain a lowercase letter')
+  .regex(/\d/, 'Password must contain a number')
+  .regex(/[^A-Za-z0-9]/, 'Password must contain a symbol');

@@ -43,6 +43,32 @@ export function LiteSetupGuide({
         </ul>
       </AppCard>
 
+      <AppCard
+        title="Copy / paste blocked? Use Download instead"
+        description="The fastest way: no typing at all, if the lab laptop can open this page."
+      >
+        <ol className="m-0 flex flex-col gap-2 pl-5 text-[13.5px] leading-relaxed text-fg-secondary">
+          <li>
+            On this laptop, start the main app so other computers on the network can reach it:
+            <Command>npm run dev -- --host</Command>
+            It prints a <b>Network</b> address such as <Code>http://10.x.x.x:5173</Code>.
+          </li>
+          <li>
+            On the lab laptop, open that address followed by <Code>/ref2</Code> in the browser and
+            press <b>Download all (.zip)</b> at the top. Unzip it (right-click &gt; Extract All) and
+            continue at step 3 below (<Code>npm install</Code>); steps 2 and 4 are not needed.
+          </li>
+          <li>
+            For a single file use <b>Download</b> next to Prev / Next and save it into the right
+            folder.
+          </li>
+          <li>
+            If downloads are blocked too, type the files: use <b>A+ / A++</b> for bigger text and
+            click a line to mark where you are; lines above it are dimmed.
+          </li>
+        </ol>
+      </AppCard>
+
       <AppCard title="Create it on the lab laptop" description="Follow the steps in order.">
         <ol className="m-0 flex list-none flex-col gap-5 p-0">
           <Step n={1} title="Check Node.js">
@@ -90,7 +116,7 @@ export function LiteSetupGuide({
           <Step n={6} title="Try every page">
             <ul className="m-0 flex flex-col gap-1 pl-5">
               <li>
-                Sign in with domain <Code>Local</Code>, user <Code>ramakrishna</Code>, any password
+                Sign in with domain <Code>Local</Code>, user <Code>superadmin</Code>, any password
                 (the password <Code>invalid</Code> shows a failed sign-in).
               </li>
               <li>Open Home, then each item under Configurations in the sidebar.</li>

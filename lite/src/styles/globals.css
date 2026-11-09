@@ -1,6 +1,7 @@
 @import './tailwind.css';
 @import './variables.css';
 @import './themes.css';
+@import './background.css';
 @import './toaster.css';
 
 *,
@@ -17,7 +18,6 @@ body,
 }
 
 body {
-  background-color: var(--oe-background);
   color: var(--oe-text-primary);
   font-family: var(--font-sans);
   font-size: 14px;

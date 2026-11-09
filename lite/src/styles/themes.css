@@ -253,64 +253,6 @@
   -webkit-backdrop-filter: blur(var(--oe-blur-sm));
 }
 
-/* ------------------------------------------------------------------ */
-/* Page backdrops: one treatment per product area (see PageBackdrop).  */
-/* ------------------------------------------------------------------ */
-.oe-backdrop {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 520px;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-  mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 100%);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 100%);
-}
-
-.oe-backdrop::before,
-.oe-backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-}
-
-/* Lighting layer (all variants). */
-.oe-backdrop::after {
-  inset: -10%;
-  background:
-    radial-gradient(38% 55% at 78% 0%, var(--oe-backdrop-primary), transparent 70%),
-    radial-gradient(30% 45% at 12% 12%, var(--oe-backdrop-secondary), transparent 70%);
-}
-
-/* Pattern layer: an SVG mask filled with the theme's primary colour. */
-.oe-backdrop::before {
-  z-index: 1;
-  background: var(--oe-primary);
-  opacity: 0.16;
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-}
-
-/* Command centre: three light sources drifting very slowly over a constellation. */
-.oe-backdrop[data-variant='command']::after {
-  background:
-    radial-gradient(38% 60% at 80% -5%, var(--oe-backdrop-primary), transparent 70%),
-    radial-gradient(28% 50% at 10% 5%, var(--oe-backdrop-secondary), transparent 70%),
-    radial-gradient(30% 40% at 48% 35%, var(--oe-backdrop-tertiary), transparent 70%);
-  animation: oe-drift 26s ease-in-out infinite;
-}
-
-.oe-backdrop[data-variant='command']::before {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='180'%3E%3Cg fill='none' stroke='black' stroke-width='0.7'%3E%3Cpath d='M24 34 96 78 178 42 252 104M96 78l30 66 92 12M24 34l18 86 84 24M178 42l40 -28M252 104l-34 52'/%3E%3C/g%3E%3Cg fill='black'%3E%3Ccircle cx='24' cy='34' r='2'/%3E%3Ccircle cx='96' cy='78' r='2.8'/%3E%3Ccircle cx='178' cy='42' r='2'/%3E%3Ccircle cx='252' cy='104' r='2.4'/%3E%3Ccircle cx='126' cy='144' r='2'/%3E%3Ccircle cx='218' cy='156' r='2.6'/%3E%3Ccircle cx='42' cy='120' r='1.6'/%3E%3Ccircle cx='218' cy='14' r='1.6'/%3E%3C/g%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='180'%3E%3Cg fill='none' stroke='black' stroke-width='0.7'%3E%3Cpath d='M24 34 96 78 178 42 252 104M96 78l30 66 92 12M24 34l18 86 84 24M178 42l40 -28M252 104l-34 52'/%3E%3C/g%3E%3Cg fill='black'%3E%3Ccircle cx='24' cy='34' r='2'/%3E%3Ccircle cx='96' cy='78' r='2.8'/%3E%3Ccircle cx='178' cy='42' r='2'/%3E%3Ccircle cx='252' cy='104' r='2.4'/%3E%3Ccircle cx='126' cy='144' r='2'/%3E%3Ccircle cx='218' cy='156' r='2.6'/%3E%3Ccircle cx='42' cy='120' r='1.6'/%3E%3Ccircle cx='218' cy='14' r='1.6'/%3E%3C/g%3E%3C/svg%3E");
-  opacity: 0.22;
-}
-
-/* Default: lighting only. */
-.oe-backdrop[data-variant='mesh']::before {
-  display: none;
-}
-
 /* Brand gradient fill: logo mark, login visual and brand moments. */
 .oe-brand-fill {
   background: var(--oe-brand-gradient);
@@ -425,20 +367,6 @@
 /* ------------------------------------------------------------------ */
 /* Shell                                                               */
 /* ------------------------------------------------------------------ */
-/* Ambient blue lighting behind the whole shell; content scrolls over it. */
-.oe-shell {
-  position: relative;
-  isolation: isolate;
-}
-
-.oe-shell::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: var(--oe-ambient);
-}
 
 .oe-sider {
   backdrop-filter: saturate(160%) blur(var(--oe-blur-lg));
@@ -1175,7 +1103,8 @@
   background: linear-gradient(180deg, var(--oe-border-strong), var(--oe-border));
 }
 
-.oe-timeline__item:nth-last-child(2)::before {
+/* No connector below the last item. */
+.oe-timeline__item:last-child::before {
   display: none;
 }
 
@@ -1202,13 +1131,23 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Login                                                               */
+/* Search (Ctrl+K)                                                     */
 /* ------------------------------------------------------------------ */
-/* Soft brand lighting behind the sign-in card, in both themes. */
-.oe-login-page {
-  background:
-    radial-gradient(60% 50% at 50% -10%, var(--oe-backdrop-primary), transparent 70%),
-    radial-gradient(40% 40% at 100% 100%, var(--oe-backdrop-secondary), transparent 70%),
-    radial-gradient(35% 35% at 0% 80%, var(--oe-backdrop-tertiary), transparent 70%),
-    var(--oe-background);
+.oe-command .ant-modal-container {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.oe-command-item {
+  transition: background var(--oe-duration-fast) var(--oe-ease);
+}
+
+.oe-command-item[aria-selected='true'] {
+  background: var(--oe-sidebar-active-bg);
+  color: var(--oe-text-primary);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--oe-primary) 16%, transparent);
+}
+
+.oe-command-item[aria-selected='true'] svg {
+  color: var(--oe-primary);
 }

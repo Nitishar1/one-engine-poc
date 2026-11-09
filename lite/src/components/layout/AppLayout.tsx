@@ -15,7 +15,7 @@ export function AppLayout() {
   useHotkey('[', () => !isMobile && toggleSidebar());
 
   return (
-    <Layout className="oe-shell h-screen overflow-hidden !bg-bg">
+    <Layout className="oe-shell h-screen overflow-hidden">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-surface-elevated focus:px-3 focus:py-2 focus:text-fg"

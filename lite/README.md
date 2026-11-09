@@ -19,7 +19,7 @@ user name and password; the password `invalid` shows a failed login. Users in th
 
 | User name     | Roles             | Sees                                     |
 | ------------- | ----------------- | ---------------------------------------- |
-| `ramakrishna` | Admin, Developer  | everything (Admin roles see every page)  |
+| `superadmin`  | Admin, Developer  | everything (Admin roles see every page)  |
 | `oeUser`      | Test User         | only what Authorization gives Test User  |
 | any other     | Admin             | everything                               |
 

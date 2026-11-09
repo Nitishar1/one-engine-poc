@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Checkbox, Input } from 'antd';
-import { ArrowLeft, ArrowRight, BookOpen, Check, Copy, Search } from 'lucide-react';
+import { Checkbox, Input, Segmented, Tooltip } from 'antd';
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Check,
+  Copy,
+  Download,
+  FolderDown,
+  Search,
+} from 'lucide-react';
 import { AppButton } from '@/components/common/AppButton';
 import { toast } from '@/components/feedback/toastStore';
 import { BrandMark } from '@/components/layout/BrandMark';
@@ -10,7 +19,29 @@ import { ROUTES } from '@/config/routes';
 import { useHotkey } from '@/hooks/useHotkey';
 import { APP_CONFIG } from '@/utils/constants';
 import { countSpecialChars, type ReferenceGroup, type SourceFile } from '../utils/referenceUtils';
-import { CodeView } from './CodeView';
+import { createZip, downloadBlob, downloadText } from '../utils/download';
+import { CodeView, type CodeSize } from './CodeView';
+
+/** Small per-browser setting (text size, marked lines); falls back to `initial`. */
+function useStoredState<T>(key: string, initial: T) {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? (JSON.parse(raw) as T) : initial;
+    } catch {
+      return initial;
+    }
+  });
+  const update = (next: T) => {
+    setValue(next);
+    try {
+      localStorage.setItem(key, JSON.stringify(next));
+    } catch {
+      // Storage unavailable: the setting lasts for this visit only.
+    }
+  };
+  return [value, update] as const;
+}
 
 function readDone(storageKey: string): Set<string> {
   try {
@@ -45,6 +76,8 @@ interface ReferenceViewerProps {
   groups: ReferenceGroup[];
   /** localStorage key for the ticked-off files; one per project. */
   storageKey: string;
+  /** Folder / zip name for "Download all", e.g. oneEngine_lite. */
+  downloadName: string;
   /** Shown before the first file; receives the size of the required files. */
   renderSetup: (required: { files: number; lines: number }) => ReactNode;
 }
@@ -58,6 +91,7 @@ export function ReferenceViewer({
   files,
   groups,
   storageKey,
+  downloadName,
   renderSetup,
 }: ReferenceViewerProps) {
   const navigate = useNavigate();
@@ -81,6 +115,21 @@ export function ReferenceViewer({
     const target = index + delta;
     if (target < 0) open();
     else if (target < files.length) open(files[target].path);
+  };
+
+  const [codeSize, setCodeSize] = useStoredState<CodeSize>(`${storageKey}:size`, 'normal');
+  const [markedLines, setMarkedLines] = useStoredState<Record<string, number>>(
+    `${storageKey}:lines`,
+    {},
+  );
+
+  /** Whole project as a .zip, for machines where copy / paste is blocked. */
+  const downloadAll = () => {
+    downloadBlob(
+      `${downloadName}.zip`,
+      createZip(files.map((f) => ({ path: `${downloadName}/${f.path}`, content: f.content }))),
+    );
+    void toast.success(`Downloading ${files.length} files as ${downloadName}.zip`);
   };
 
   const copy = async () => {
@@ -127,6 +176,21 @@ export function ReferenceViewer({
         </div>
         <span className="hidden text-[12px] tabular-nums text-fg-muted sm:inline">{percent}%</span>
         <div className="ml-auto flex items-center gap-2">
+          <Tooltip title="Text size of the code">
+            <Segmented<CodeSize>
+              size="small"
+              value={codeSize}
+              onChange={setCodeSize}
+              options={[
+                { label: 'A', value: 'normal' },
+                { label: 'A+', value: 'large' },
+                { label: 'A++', value: 'xlarge' },
+              ]}
+            />
+          </Tooltip>
+          <AppButton tone="secondary" icon={<FolderDown size={15} />} onClick={downloadAll}>
+            Download all (.zip)
+          </AppButton>
           <ThemeToggle />
           <AppButton tone="secondary" onClick={() => navigate(ROUTES.home)}>
             Open app
@@ -237,6 +301,15 @@ export function ReferenceViewer({
                   </AppButton>
                   <AppButton
                     tone="secondary"
+                    icon={<Download size={15} />}
+                    onClick={() =>
+                      downloadText(file.path.split('/').pop() ?? 'file.txt', file.content)
+                    }
+                  >
+                    Download
+                  </AppButton>
+                  <AppButton
+                    tone="secondary"
                     icon={<ArrowLeft size={15} />}
                     onClick={() => step(-1)}
                   >
@@ -262,7 +335,15 @@ export function ReferenceViewer({
                   </AppButton>
                 </div>
               </div>
-              <CodeView content={file.content} />
+              <p className="m-0 mb-2 text-[12.5px] text-fg-muted">
+                Click a line to mark where you are; lines above it are dimmed.
+              </p>
+              <CodeView
+                content={file.content}
+                size={codeSize}
+                currentLine={markedLines[file.path]}
+                onLineClick={(line) => setMarkedLines({ ...markedLines, [file.path]: line })}
+              />
             </>
           ) : (
             renderSetup({ files: required.length, lines: requiredLines })

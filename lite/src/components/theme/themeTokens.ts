@@ -25,8 +25,6 @@ export interface ThemeTokens {
   gradientSoft: string;
   /** Hairline gradient used as a border on featured elements. */
   gradientBorder: string;
-  /** Radial ambient lighting painted behind the app shell. */
-  ambient: string;
   /** Coloured elevation for primary actions and featured cards. */
   glow: string;
 
@@ -45,10 +43,6 @@ export interface ThemeTokens {
   glassBorder: string;
   /** Inset top highlight that gives glass its edge light. */
   glassHighlight: string;
-  /** Backdrop colours behind page content (command centre, network, AI, grid). */
-  backdropPrimary: string;
-  backdropSecondary: string;
-  backdropTertiary: string;
 
   sidebarBg: string;
   sidebarText: string;
@@ -116,8 +110,6 @@ export const themeTokens: Record<ThemeMode, ThemeTokens> = {
       'linear-gradient(180deg, rgba(59, 130, 246, 0.09) 0%, rgba(59, 130, 246, 0.015) 100%)',
     gradientBorder:
       'linear-gradient(135deg, rgba(96, 165, 250, 0.7) 0%, rgba(34, 211, 238, 0.35) 45%, rgba(99, 102, 241, 0.6) 100%)',
-    ambient:
-      'radial-gradient(60% 50% at 85% -10%, rgba(37, 99, 235, 0.16) 0%, transparent 60%), radial-gradient(45% 40% at 0% 0%, rgba(6, 182, 212, 0.07) 0%, transparent 60%), radial-gradient(50% 50% at 50% 110%, rgba(99, 102, 241, 0.07) 0%, transparent 60%)',
     glow: '0 10px 30px -10px rgba(37, 99, 235, 0.6), 0 2px 6px -2px rgba(37, 99, 235, 0.4)',
 
     background: '#060a14',
@@ -130,10 +122,6 @@ export const themeTokens: Record<ThemeMode, ThemeTokens> = {
     glassStrong: 'rgba(14, 22, 40, 0.68)',
     glassBorder: 'rgba(148, 190, 255, 0.16)',
     glassHighlight: 'inset 0 1px 0 rgba(180, 210, 255, 0.07)',
-    backdropPrimary: 'rgba(37, 99, 235, 0.22)',
-    backdropSecondary: 'rgba(34, 211, 238, 0.12)',
-    backdropTertiary: 'rgba(99, 102, 241, 0.16)',
-
     sidebarBg: 'rgba(7, 12, 24, 0.74)',
     sidebarText: '#94a0b8',
     sidebarActiveBg:
@@ -196,8 +184,6 @@ export const themeTokens: Record<ThemeMode, ThemeTokens> = {
     gradientSoft: 'linear-gradient(180deg, #eff5ff 0%, #ffffff 100%)',
     gradientBorder:
       'linear-gradient(135deg, rgba(37, 99, 235, 0.55) 0%, rgba(6, 182, 212, 0.3) 45%, rgba(99, 102, 241, 0.5) 100%)',
-    ambient:
-      'radial-gradient(60% 45% at 85% -10%, rgba(37, 99, 235, 0.09) 0%, transparent 60%), radial-gradient(45% 40% at 0% 0%, rgba(6, 182, 212, 0.06) 0%, transparent 60%)',
     glow: '0 10px 28px -12px rgba(37, 99, 235, 0.55), 0 2px 6px -2px rgba(37, 99, 235, 0.3)',
 
     background: '#f5f7fb',
@@ -210,10 +196,6 @@ export const themeTokens: Record<ThemeMode, ThemeTokens> = {
     glassStrong: 'rgba(255, 255, 255, 0.7)',
     glassBorder: 'rgba(37, 99, 235, 0.14)',
     glassHighlight: 'inset 0 1px 0 rgba(255, 255, 255, 0.9)',
-    backdropPrimary: 'rgba(37, 99, 235, 0.13)',
-    backdropSecondary: 'rgba(6, 182, 212, 0.1)',
-    backdropTertiary: 'rgba(99, 102, 241, 0.1)',
-
     sidebarBg: 'rgba(251, 252, 254, 0.74)',
     sidebarText: '#4b5873',
     sidebarActiveBg:

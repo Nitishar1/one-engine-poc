@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Dropdown } from 'antd';
-import { ChevronDown, LogOut } from 'lucide-react';
+import { ChevronDown, KeyRound, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { ChangePasswordModal } from '@/features/auth/components/ChangePasswordModal';
 import { useLogout } from '@/features/auth/hooks/useAuth';
 import { formatDateTime } from '@/utils/formatters';
 
@@ -36,6 +37,7 @@ export function UserMenu() {
   const user = useAuthStore((s) => s.user);
   const logout = useLogout();
   const [open, setOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   if (!user) return null;
 
@@ -69,6 +71,17 @@ export function UserMenu() {
         <button
           type="button"
           role="menuitem"
+          className={menuItemClass}
+          onClick={() => {
+            setOpen(false);
+            setChangePasswordOpen(true);
+          }}
+        >
+          <KeyRound size={15} /> Change password
+        </button>
+        <button
+          type="button"
+          role="menuitem"
           className={`${menuItemClass} hover:!text-danger`}
           disabled={logout.isPending}
           onClick={() => logout.mutate()}
@@ -81,27 +94,30 @@ export function UserMenu() {
   );
 
   return (
-    <Dropdown
-      open={open}
-      onOpenChange={setOpen}
-      trigger={['click']}
-      placement="bottomRight"
-      popupRender={() => panel}
-    >
-      <button
-        type="button"
-        aria-label="Open user menu"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="flex h-9 cursor-pointer items-center gap-2 rounded-full border-0 bg-transparent py-0 pl-0.5 pr-0.5 text-[13px] font-medium text-fg transition-colors duration-150 hover:bg-hover sm:rounded-[9px] sm:pr-2"
+    <>
+      <Dropdown
+        open={open}
+        onOpenChange={setOpen}
+        trigger={['click']}
+        placement="bottomRight"
+        popupRender={() => panel}
       >
-        <Avatar name={user.displayName} size={28} />
-        <span className="hidden max-w-[140px] truncate lg:inline">{user.displayName}</span>
-        <ChevronDown
-          size={14}
-          className={`hidden text-fg-muted transition-transform duration-200 sm:inline ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-    </Dropdown>
+        <button
+          type="button"
+          aria-label="Open user menu"
+          aria-haspopup="menu"
+          aria-expanded={open}
+          className="flex h-9 cursor-pointer items-center gap-2 rounded-full border-0 bg-transparent py-0 pl-0.5 pr-0.5 text-[13px] font-medium text-fg transition-colors duration-150 hover:bg-hover sm:rounded-[9px] sm:pr-2"
+        >
+          <Avatar name={user.displayName} size={28} />
+          <span className="hidden max-w-[140px] truncate lg:inline">{user.displayName}</span>
+          <ChevronDown
+            size={14}
+            className={`hidden text-fg-muted transition-transform duration-200 sm:inline ${open ? 'rotate-180' : ''}`}
+          />
+        </button>
+      </Dropdown>
+      <ChangePasswordModal open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} />
+    </>
   );
 }

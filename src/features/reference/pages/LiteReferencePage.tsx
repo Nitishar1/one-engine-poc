@@ -1,7 +1,7 @@
 import { STORAGE_KEYS } from '@/utils/constants';
 import { LiteSetupGuide } from '../components/LiteSetupGuide';
 import { ReferenceViewer } from '../components/ReferenceViewer';
-import { LITE_FILES, LITE_GROUPS } from '../utils/liteFiles';
+import { LITE_FILES, LITE_FOLDER, LITE_GROUPS } from '../utils/liteFiles';
 
 /** /ref2: typing reference for the separate OneEngine Lite project. */
 export default function LiteReferencePage() {
@@ -21,6 +21,7 @@ export default function LiteReferencePage() {
       files={LITE_FILES}
       groups={LITE_GROUPS}
       storageKey={STORAGE_KEYS.typingProgressLite}
+      downloadName={LITE_FOLDER}
       renderSetup={({ files, lines }) => (
         <LiteSetupGuide requiredFiles={files} requiredLines={lines} />
       )}

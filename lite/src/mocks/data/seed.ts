@@ -119,7 +119,7 @@ export const rolesSeed: Role[] = [
     description: 'This role is created for testing purpose',
     parentRoleId: null,
     isAdmin: false,
-    ...audit(3, 'ramakrishna'),
+    ...audit(3, 'superadmin'),
   },
 ];
 
@@ -162,12 +162,12 @@ export const usersSeed: AppUser[] = [
   },
   {
     id: 'usr-rk',
-    userName: 'ramakrishna',
+    userName: 'superadmin',
     domainId: 'dom-local',
     timeZone: TIME_ZONES[0],
     homeUrl: '/home',
     roleIds: ['role-admin', 'role-dev'],
-    ...audit(10, 'ramakrishna'),
+    ...audit(10, 'superadmin'),
   },
   {
     id: 'usr-oe',
@@ -238,14 +238,14 @@ export const reportsSeed: Report[] = [
 export const lockedAccountsSeed: LockedAccount[] = [
   {
     id: 'lock-1',
-    userAccountName: 'vijayn',
+    userAccountName: 'lockeduser01',
     lockedOn: at(1, 9),
     unlockedBy: null,
     unlockedOn: null,
   },
   {
     id: 'lock-2',
-    userAccountName: '2055765',
+    userAccountName: 'lockeduser02',
     lockedOn: at(9, 14),
     unlockedBy: 'SuperUser',
     unlockedOn: at(8, 10),
@@ -265,7 +265,7 @@ export function generateExecutions(): ExecutionRecord[] {
         id: `exe-${n}`,
         runbookName: runbooks[n % runbooks.length],
         target: targets[n % targets.length],
-        triggeredBy: n % 3 ? 'SuperUser' : 'ramakrishna',
+        triggeredBy: n % 3 ? 'SuperUser' : 'superadmin',
         status: day === 0 && i === 0 ? 'Running' : n % 6 === 0 ? 'Failed' : 'Success',
         startedOn: at(day, 8 + i),
         durationSeconds: 40 + ((n * 37) % 300),

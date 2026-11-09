@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
     login: '/auth/login',
     logout: '/auth/logout',
     session: '/auth/session',
+    changePassword: '/auth/change-password',
   },
   /** Menu tree for the signed-in user; drives the sidebar and which pages can open. */
   navigation: '/navigation',

@@ -1,0 +1,144 @@
+/*
+ * PAGE BACKGROUND - the one place to change how the background of every page looks.
+ *
+ *   1. Colours: the variables below (one block for dark, one for light). Change a colour or the
+ *      last number of an rgba(...) (its strength) and every page follows.
+ *   2. Layers: whole-screen glow (.oe-shell::before), glow behind page titles (.oe-backdrop),
+ *      sign-in page (.oe-login-page).
+ *
+ * ThemeProvider sets data-theme="dark" | "light" on <html>. To give one page its own look, add a
+ * .oe-backdrop[data-variant='...'] rule here and pick it in components/layout/PageBackdrop.tsx.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Colours                                                             */
+/* ------------------------------------------------------------------ */
+:root,
+:root[data-theme='dark'] {
+  /* Solid page colour under everything. */
+  --oe-page-background: #060a14;
+  /* Whole-screen glow: blue top-right, cyan top-left, indigo / cyan in the lower corners. */
+  --oe-ambient:
+    radial-gradient(60% 50% at 85% -10%, rgba(37, 99, 235, 0.22) 0%, transparent 60%),
+    radial-gradient(45% 40% at 0% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 60%),
+    radial-gradient(45% 45% at 100% 100%, rgba(99, 102, 241, 0.12) 0%, transparent 65%),
+    radial-gradient(40% 40% at 0% 100%, rgba(6, 182, 212, 0.08) 0%, transparent 65%);
+  /* The three lights behind page titles (blue, cyan, indigo). */
+  --oe-backdrop-primary: rgba(37, 99, 235, 0.28);
+  --oe-backdrop-secondary: rgba(34, 211, 238, 0.16);
+  --oe-backdrop-tertiary: rgba(99, 102, 241, 0.2);
+}
+
+:root[data-theme='light'] {
+  --oe-page-background: #f5f7fb;
+  --oe-ambient:
+    radial-gradient(60% 45% at 85% -10%, rgba(37, 99, 235, 0.12) 0%, transparent 60%),
+    radial-gradient(45% 40% at 0% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+    radial-gradient(45% 45% at 100% 100%, rgba(99, 102, 241, 0.08) 0%, transparent 65%),
+    radial-gradient(40% 40% at 0% 100%, rgba(6, 182, 212, 0.06) 0%, transparent 65%);
+  --oe-backdrop-primary: rgba(37, 99, 235, 0.16);
+  --oe-backdrop-secondary: rgba(6, 182, 212, 0.12);
+  --oe-backdrop-tertiary: rgba(99, 102, 241, 0.12);
+}
+
+/* ------------------------------------------------------------------ */
+/* Whole screen                                                        */
+/* ------------------------------------------------------------------ */
+body,
+.oe-shell {
+  background-color: var(--oe-page-background);
+}
+
+/* Ambient blue lighting behind the whole shell; content scrolls over it. */
+.oe-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.oe-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--oe-ambient);
+}
+
+/* ------------------------------------------------------------------ */
+/* Glow behind page titles (see components/layout/PageBackdrop.tsx)    */
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+.oe-backdrop {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 520px;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 100%);
+}
+
+.oe-backdrop::before,
+.oe-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+/* Lighting layer (all variants). */
+.oe-backdrop::after {
+  inset: -10%;
+  background:
+    radial-gradient(38% 55% at 78% 0%, var(--oe-backdrop-primary), transparent 70%),
+    radial-gradient(30% 45% at 12% 12%, var(--oe-backdrop-secondary), transparent 70%);
+}
+
+/* Pattern layer: an SVG mask filled with the theme's primary colour. */
+.oe-backdrop::before {
+  z-index: 1;
+  background: var(--oe-primary);
+  opacity: 0.16;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+/* Command centre: three light sources drifting very slowly over a constellation. */
+.oe-backdrop[data-variant='command']::after {
+  background:
+    radial-gradient(38% 60% at 80% -5%, var(--oe-backdrop-primary), transparent 70%),
+    radial-gradient(28% 50% at 10% 5%, var(--oe-backdrop-secondary), transparent 70%),
+    radial-gradient(30% 40% at 48% 35%, var(--oe-backdrop-tertiary), transparent 70%);
+  animation: oe-drift 26s ease-in-out infinite;
+}
+
+.oe-backdrop[data-variant='command']::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='180'%3E%3Cg fill='none' stroke='black' stroke-width='0.7'%3E%3Cpath d='M24 34 96 78 178 42 252 104M96 78l30 66 92 12M24 34l18 86 84 24M178 42l40 -28M252 104l-34 52'/%3E%3C/g%3E%3Cg fill='black'%3E%3Ccircle cx='24' cy='34' r='2'/%3E%3Ccircle cx='96' cy='78' r='2.8'/%3E%3Ccircle cx='178' cy='42' r='2'/%3E%3Ccircle cx='252' cy='104' r='2.4'/%3E%3Ccircle cx='126' cy='144' r='2'/%3E%3Ccircle cx='218' cy='156' r='2.6'/%3E%3Ccircle cx='42' cy='120' r='1.6'/%3E%3Ccircle cx='218' cy='14' r='1.6'/%3E%3C/g%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='180'%3E%3Cg fill='none' stroke='black' stroke-width='0.7'%3E%3Cpath d='M24 34 96 78 178 42 252 104M96 78l30 66 92 12M24 34l18 86 84 24M178 42l40 -28M252 104l-34 52'/%3E%3C/g%3E%3Cg fill='black'%3E%3Ccircle cx='24' cy='34' r='2'/%3E%3Ccircle cx='96' cy='78' r='2.8'/%3E%3Ccircle cx='178' cy='42' r='2'/%3E%3Ccircle cx='252' cy='104' r='2.4'/%3E%3Ccircle cx='126' cy='144' r='2'/%3E%3Ccircle cx='218' cy='156' r='2.6'/%3E%3Ccircle cx='42' cy='120' r='1.6'/%3E%3Ccircle cx='218' cy='14' r='1.6'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.22;
+}
+
+/* Default: lighting only. */
+.oe-backdrop[data-variant='mesh']::before {
+  display: none;
+}
+
+/* Default pages: soft blue / cyan / indigo light across the top. */
+.oe-backdrop[data-variant='mesh']::after {
+  background:
+    radial-gradient(40% 55% at 82% 0%, var(--oe-backdrop-primary), transparent 70%),
+    radial-gradient(30% 45% at 8% 8%, var(--oe-backdrop-secondary), transparent 70%),
+    radial-gradient(28% 40% at 50% 30%, var(--oe-backdrop-tertiary), transparent 70%);
+}
+
+/* ------------------------------------------------------------------ */
+/* Sign-in page                                                        */
+/* ------------------------------------------------------------------ */
+/* Soft brand lighting behind the sign-in card, in both themes. */
+.oe-login-page {
+  background:
+    radial-gradient(60% 50% at 50% -10%, var(--oe-backdrop-primary), transparent 70%),
+    radial-gradient(40% 40% at 100% 100%, var(--oe-backdrop-secondary), transparent 70%),
+    radial-gradient(35% 35% at 0% 80%, var(--oe-backdrop-tertiary), transparent 70%),
+    var(--oe-page-background);
+}

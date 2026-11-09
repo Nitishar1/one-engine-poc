@@ -54,6 +54,7 @@ const ORDER = [
   'src/styles/tailwind.css',
   'src/styles/variables.css',
   'src/styles/themes.css',
+  'src/styles/background.css',
   'src/styles/toaster.css',
   'src/styles/globals.css',
   'src/types/',

@@ -23,6 +23,8 @@ export function useNavigation() {
       items,
       /** Every page the user may open, in menu order. */
       pages: flat.map((m) => m.item),
+      /** The same pages with the groups above them (for search). */
+      flat,
       isLoading: query.isLoading,
       error: query.error,
       refetch: query.refetch,

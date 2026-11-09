@@ -127,6 +127,24 @@ const authRoutes: MockRoute[] = [
   },
   {
     method: 'POST',
+    pattern: API_ENDPOINTS.auth.changePassword,
+    handler: ({ body }) => {
+      const { currentPassword, newPassword } = body as {
+        currentPassword?: string;
+        newPassword?: string;
+      };
+      if (!currentPassword || !newPassword) return fail(400, 'Both passwords are required');
+      // Demo rule: the current password "invalid" is treated as wrong.
+      if (currentPassword.toLowerCase() === 'invalid')
+        return fail(400, 'Current password is incorrect');
+      if (currentPassword === newPassword)
+        return fail(400, 'New password must differ from the current password');
+      if (newPassword.length < 8) return fail(400, 'Password must be at least 8 characters');
+      return ok(null, 'Password changed successfully');
+    },
+  },
+  {
+    method: 'POST',
     pattern: API_ENDPOINTS.auth.logout,
     handler: () => {
       mockSession.clear();

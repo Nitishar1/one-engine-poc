@@ -11,6 +11,7 @@ export default function ReferencePage() {
       files={SOURCE_FILES}
       groups={SOURCE_GROUPS}
       storageKey={STORAGE_KEYS.typingProgress}
+      downloadName="oneEngine_poc_4"
       renderSetup={({ files, lines }) => <SetupGuide requiredFiles={files} requiredLines={lines} />}
     />
   );

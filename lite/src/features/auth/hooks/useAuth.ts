@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { ROUTES } from '@/config/routes';
 import { authService } from '../services/authService';
-import type { LoginRequest } from '../types/auth.types';
+import { toast } from '@/components/feedback/toastStore';
+import { getErrorMessage } from '@/utils/helpers';
+import type { ChangePasswordRequest, LoginRequest } from '../types/auth.types';
 
 export const useDomains = () =>
   useQuery({
@@ -31,5 +33,13 @@ export function useLogout() {
       queryClient.clear();
       navigate(ROUTES.login, { replace: true });
     },
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (request: ChangePasswordRequest) => authService.changePassword(request),
+    onSuccess: () => void toast.success('Password changed successfully'),
+    onError: (err) => void toast.error(getErrorMessage(err)),
   });
 }

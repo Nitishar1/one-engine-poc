@@ -1,7 +1,7 @@
 import { http } from '@/services/api/axiosInstance';
 import { API_ENDPOINTS } from '@/services/api/apiEndpoints';
 import type { RequestOptions } from '@/types/api.types';
-import type { LoginRequest, LoginResponse } from '../types/auth.types';
+import type { ChangePasswordRequest, LoginRequest, LoginResponse } from '../types/auth.types';
 
 export const authService = {
   getDomains: (options?: RequestOptions) =>
@@ -10,4 +10,7 @@ export const authService = {
   /** Exchanges the httpOnly session cookie for a fresh access token. */
   restoreSession: () => http.get<LoginResponse>(API_ENDPOINTS.auth.session),
   logout: () => http.post<null>(API_ENDPOINTS.auth.logout),
+  /** Passwords are sent exactly as typed (never trimmed or cleaned). */
+  changePassword: (request: ChangePasswordRequest) =>
+    http.post<null>(API_ENDPOINTS.auth.changePassword, request),
 };
