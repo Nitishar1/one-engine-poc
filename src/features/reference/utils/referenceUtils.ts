@@ -31,6 +31,16 @@ export function mkdirCommand(files: SourceFile[], extraDirs: string[] = []) {
     .join(', ')}`;
 }
 
+/**
+ * PowerShell command that creates every file (empty), one path per line in typing order. Run it
+ * after the folders exist. Without -Force, New-Item never overwrites a file that already has
+ * content; existing files are skipped silently.
+ */
+export function newFilesCommand(files: SourceFile[]) {
+  const lines = files.map((f) => `  '${f.path.replaceAll('/', '\\')}'`).join('\n');
+  return `$files = @(\n${lines}\n)\nNew-Item -ItemType File -Path $files -ErrorAction SilentlyContinue | Out-Null`;
+}
+
 /** How to type each non-ASCII character used in the sources on a Windows keyboard. */
 const SPECIAL_CHARS: Record<string, { name: string; alt?: string }> = {
   '…': { name: 'Horizontal Ellipsis', alt: '0133' },

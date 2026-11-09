@@ -1,5 +1,10 @@
 import { AppCard } from '@/components/common/AppCard';
-import { LITE_FOLDER, LITE_MKDIR_COMMAND } from '../utils/liteFiles';
+import {
+  LITE_FILES,
+  LITE_FOLDER,
+  LITE_MKDIR_COMMAND,
+  LITE_NEW_FILES_COMMAND,
+} from '../utils/liteFiles';
 import { Code, Command, Step } from './GuideParts';
 
 const PAGES = [
@@ -81,6 +86,13 @@ export function LiteSetupGuide({
             <Command>{`mkdir C:\\${LITE_FOLDER}\ncd C:\\${LITE_FOLDER}`}</Command>
             Then open <b>PowerShell</b> in that folder and create all sub-folders at once:
             <Command>{LITE_MKDIR_COMMAND}</Command>
+            Then, in the same PowerShell window, create all {LITE_FILES.length} files (empty) with
+            the names below. Type it exactly, one name per line, then press Enter after the last{' '}
+            <Code>)</Code> line. Files that already exist are left untouched, so it is safe to run
+            again:
+            <Command>{LITE_NEW_FILES_COMMAND}</Command>
+            Check with <Code>dir -Recurse -File -Name</Code>. Each file is now in place; open it in
+            your editor and fill in its content from the list on the left.
           </Step>
           <Step n={3} title="Create package.json and install">
             Open <Code>package.json</Code> in the list on the left, create the file with exactly

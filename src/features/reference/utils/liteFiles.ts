@@ -2,7 +2,13 @@
  * Files of OneEngine Lite (the separate app in `lite/`) for the /ref2 typing reference, read
  * as raw text at build time.
  */
-import { countLines, mkdirCommand, type ReferenceGroup, type SourceFile } from './referenceUtils';
+import {
+  countLines,
+  mkdirCommand,
+  newFilesCommand,
+  type ReferenceGroup,
+  type SourceFile,
+} from './referenceUtils';
 
 /** Folder name to create the project in on the lab laptop. */
 export const LITE_FOLDER = 'oneEngine_lite';
@@ -155,3 +161,5 @@ export const LITE_GROUPS: ReferenceGroup[] = [
 ];
 
 export const LITE_MKDIR_COMMAND = mkdirCommand(LITE_FILES);
+
+export const LITE_NEW_FILES_COMMAND = newFilesCommand(LITE_FILES);
