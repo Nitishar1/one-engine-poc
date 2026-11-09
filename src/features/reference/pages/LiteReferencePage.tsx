@@ -1,0 +1,29 @@
+import { STORAGE_KEYS } from '@/utils/constants';
+import { LiteSetupGuide } from '../components/LiteSetupGuide';
+import { ReferenceViewer } from '../components/ReferenceViewer';
+import { LITE_FILES, LITE_FOLDER, LITE_GROUPS } from '../utils/liteFiles';
+
+/** /ref2: typing reference for the separate OneEngine Lite project. */
+export default function LiteReferencePage() {
+  if (!LITE_FILES.length) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg p-6 text-center text-fg">
+        <p className="m-0 max-w-md text-[14px] text-fg-secondary">
+          The OneEngine Lite project wasn't found. It must be in a folder named{' '}
+          <code>{LITE_FOLDER}</code> next to this project.
+        </p>
+      </div>
+    );
+  }
+  return (
+    <ReferenceViewer
+      title="OneEngine Lite - typing reference"
+      files={LITE_FILES}
+      groups={LITE_GROUPS}
+      storageKey={STORAGE_KEYS.typingProgressLite}
+      renderSetup={({ files, lines }) => (
+        <LiteSetupGuide requiredFiles={files} requiredLines={lines} />
+      )}
+    />
+  );
+}

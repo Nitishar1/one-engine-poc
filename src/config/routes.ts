@@ -2,6 +2,7 @@
 export const ROUTES = {
   login: '/auth/login',
   reference: '/ref',
+  referenceLite: '/ref2',
   home: '/home',
   ciType: '/ci-mapping/ci-type',
   ciTypeNew: '/ci-mapping/ci-type/new',

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { isSpecialChar, specialCharHint } from '../utils/sourceFiles';
+import { isSpecialChar, specialCharHint } from '../utils/referenceUtils';
 
 /** Splits a line so every non-ASCII character is highlighted with a typing hint. */
 function renderLine(line: string): ReactNode {

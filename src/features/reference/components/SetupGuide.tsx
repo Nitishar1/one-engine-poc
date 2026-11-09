@@ -1,37 +1,7 @@
-import type { ReactNode } from 'react';
 import { AppCard } from '@/components/common/AppCard';
-import {
-  FOLDER_COUNT,
-  MKDIR_COMMAND,
-  SPECIAL_CHAR_USAGE,
-  specialCharHint,
-} from '../utils/sourceFiles';
-
-function Command({ children }: { children: string }) {
-  return (
-    <pre className="m-0 my-2 overflow-x-auto whitespace-pre-wrap break-all rounded-[var(--oe-radius)] border border-line bg-surface-sunken px-3 py-2.5 font-mono text-[12.5px] text-fg">
-      {children}
-    </pre>
-  );
-}
-
-const code = (text: string) => (
-  <code className="rounded bg-surface-sunken px-1 py-px font-mono text-[12.5px]">{text}</code>
-);
-
-function Step({ n, title, children }: { n: number; title: string; children: ReactNode }) {
-  return (
-    <li className="flex gap-3">
-      <span className="oe-icon-tile h-7 w-7 shrink-0 rounded-full text-[12.5px] font-semibold">
-        {n}
-      </span>
-      <div className="min-w-0 flex-1 text-[13.5px] leading-relaxed text-fg-secondary">
-        <p className="m-0 mt-0.5 font-medium text-fg">{title}</p>
-        {children}
-      </div>
-    </li>
-  );
-}
+import { specialCharHint } from '../utils/referenceUtils';
+import { FOLDER_COUNT, MKDIR_COMMAND, SPECIAL_CHAR_USAGE } from '../utils/sourceFiles';
+import { Code, Command, Step } from './GuideParts';
 
 /** Setup, typing rules and the special-character table shown before the first file. */
 export function SetupGuide({
@@ -57,7 +27,7 @@ export function SetupGuide({
             <Command>{MKDIR_COMMAND}</Command>
           </Step>
           <Step n={3} title="Type package.json, then install">
-            Type file 1 ({code('package.json')}) and run:
+            Type file 1 (<Code>package.json</Code>) and run:
             <Command>npm install --legacy-peer-deps</Command>
             Keep the flag - without a lockfile npm 10 otherwise crashes with{' '}
             <i>Cannot read properties of null (reading 'edgesOut')</i>.
@@ -68,7 +38,7 @@ export function SetupGuide({
           </Step>
           <Step n={5} title="Format, check and run">
             <Command>{'npm run format\nnpm run typecheck\nnpm run dev'}</Command>
-            Open {code('http://localhost:5173')} and sign in with any user name and password.
+            Open <Code>http://localhost:5173</Code> and sign in with any user name and password.
           </Step>
         </ol>
       </AppCard>
@@ -77,29 +47,29 @@ export function SetupGuide({
         <ul className="m-0 flex flex-col gap-2 pl-5 text-[13.5px] leading-relaxed text-fg-secondary">
           <li>
             <b className="text-fg">Indentation and spacing don't matter</b> -{' '}
-            {code('npm run format')} fixes them. Spelling, brackets, quotes, commas and capitals
+            <Code>npm run format</Code> fixes them. Spelling, brackets, quotes, commas and capitals
             must be exact.
           </li>
           <li>
-            File names are case-sensitive in imports: {code('AppButton.tsx')} is not{' '}
-            {code('appButton.tsx')}.
+            File names are case-sensitive in imports: <Code>AppButton.tsx</Code> is not{' '}
+            <Code>appButton.tsx</Code>.
           </li>
           <li>
-            In Notepad, save with "Save as type: All files" so {code('.tsx')} doesn't become{' '}
-            {code('.tsx.txt')}. The env file is named exactly {code('.env')}.
+            In Notepad, save with "Save as type: All files" so <Code>.tsx</Code> doesn't become{' '}
+            <Code>.tsx.txt</Code>. The env file is named exactly <Code>.env</Code>.
           </li>
           <li>
-            Run {code('npm run typecheck')} any time. Ignore <i>Cannot find module</i> for files not
-            typed yet; any other error points at a typo as {code('file(line,col)')}.
+            Run <Code>npm run typecheck</Code> any time. Ignore <i>Cannot find module</i> for files
+            not typed yet; any other error points at a typo as <Code>file(line,col)</Code>.
           </li>
           <li>
-            The {code('src/features/reference')} files are optional. If you skip them, also leave
-            out the {code('reference')} line in {code('src/config/routes.ts')} and the{' '}
-            {code('ROUTES.reference')} route in {code('src/app/router.tsx')}.
+            The <Code>src/features/reference</Code> files are optional. If you skip them, also leave
+            out the <Code>reference</Code> line in <Code>src/config/routes.ts</Code> and the{' '}
+            <Code>ROUTES.reference</Code> route in <Code>src/app/router.tsx</Code>.
           </li>
           <li>
-            {code('package.json')} here pins exact versions and adds {code('@testing-library/dom')}{' '}
-            - that differs from the original on purpose.
+            <Code>package.json</Code> here pins exact versions and adds{' '}
+            <Code>@testing-library/dom</Code> - that differs from the original on purpose.
           </li>
         </ul>
       </AppCard>

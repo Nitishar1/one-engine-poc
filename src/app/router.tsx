@@ -88,6 +88,10 @@ export const routes: RouteObject[] = [
         element: page(() => import('@/features/reference/pages/ReferencePage')),
       },
       {
+        path: ROUTES.referenceLite,
+        element: page(() => import('@/features/reference/pages/LiteReferencePage')),
+      },
+      {
         element: <ProtectedRoute />,
         children: [
           {

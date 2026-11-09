@@ -3,17 +3,17 @@
  * sorted into the order they should be retyped on a machine without file transfer.
  */
 import selfSource from './sourceFiles.ts?raw';
+import {
+  countLines,
+  isSpecialChar,
+  mkdirCommand,
+  type ReferenceGroup,
+  type SourceFile,
+} from './referenceUtils';
 
 export type SourceGroup = 'required' | 'reference' | 'tests';
 
 export const GROUP_ORDER: SourceGroup[] = ['required', 'reference', 'tests'];
-
-export interface SourceFile {
-  path: string;
-  content: string;
-  lines: number;
-  group: SourceGroup;
-}
 
 const toRecord = (modules: Record<string, unknown>) =>
   Object.fromEntries(
@@ -164,8 +164,6 @@ function pinnedPackageJson(pkgText: string, lockText?: string) {
   return `${JSON.stringify(pkg, null, 2)}\n`;
 }
 
-export const countLines = (content: string) => content.replace(/\n+$/, '').split('\n').length;
-
 const contents: Record<string, string> = {
   ...srcFiles,
   ...Object.fromEntries(Object.entries(rootFiles).filter(([path]) => ROOT_ORDER.includes(path))),
@@ -181,63 +179,24 @@ export const SOURCE_FILES: SourceFile[] = Object.keys(contents)
     lines: countLines(contents[path]),
     group: groupOf(path),
   }))
-  .sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group));
+  .sort(
+    (a, b) =>
+      GROUP_ORDER.indexOf(a.group as SourceGroup) - GROUP_ORDER.indexOf(b.group as SourceGroup),
+  );
 
-export const GROUP_LABELS: Record<SourceGroup, string> = {
-  required: 'Required',
-  reference: 'Optional - this /ref page',
-  tests: 'Optional - tests',
-};
+export const SOURCE_GROUPS: ReferenceGroup[] = [
+  { id: 'required', label: 'Required', required: true },
+  { id: 'reference', label: 'Optional - this /ref page' },
+  { id: 'tests', label: 'Optional - tests' },
+];
 
-/** Windows `mkdir` line that creates every folder of the project in one go (PowerShell). */
-export const MKDIR_COMMAND = `mkdir ${[
-  ...new Set([
-    ...SOURCE_FILES.filter((f) => f.path.includes('/')).map((f) =>
-      f.path.slice(0, f.path.lastIndexOf('/')),
-    ),
-    'src/assets/fonts',
-    'src/assets/icons',
-    'src/assets/images',
-  ]),
-]
-  .map((dir) => dir.replaceAll('/', '\\'))
-  .sort()
-  .join(', ')}`;
+export const MKDIR_COMMAND = mkdirCommand(SOURCE_FILES, [
+  'src/assets/fonts',
+  'src/assets/icons',
+  'src/assets/images',
+]);
 
 export const FOLDER_COUNT = MKDIR_COMMAND.split(', ').length;
-
-/** How to type each non-ASCII character used in the sources on a Windows keyboard. */
-const SPECIAL_CHARS: Record<string, { name: string; alt?: string }> = {
-  '…': { name: 'Horizontal Ellipsis', alt: '0133' },
-  '—': { name: 'Em Dash', alt: '0151' },
-  '–': { name: 'En Dash', alt: '0150' },
-  '·': { name: 'Middle Dot', alt: '0183' },
-  '’': { name: 'Right Single Quotation Mark', alt: '0146' },
-  '“': { name: 'Left Double Quotation Mark', alt: '0147' },
-  '”': { name: 'Right Double Quotation Mark', alt: '0148' },
-  '©': { name: 'Copyright Sign', alt: '0169' },
-  '€': { name: 'Euro Sign', alt: '0128' },
-  '•': { name: 'Bullet', alt: '0149' },
-  '›': { name: 'Single Right-Pointing Angle Quotation Mark', alt: '0155' },
-  '→': { name: 'Rightwards Arrow' },
-  '↑': { name: 'Upwards Arrow' },
-  '↓': { name: 'Downwards Arrow' },
-  '↵': { name: 'Downwards Arrow With Corner Leftwards' },
-  '⌘': { name: 'Place Of Interest Sign' },
-  '₹': { name: 'Indian Rupee Sign' },
-};
-
-export const isSpecialChar = (char: string) => char.charCodeAt(0) > 127;
-
-export function specialCharHint(char: string) {
-  const code = `U+${char.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0')}`;
-  const info = SPECIAL_CHARS[char];
-  if (!info) return `${code} - Character Map: search ${code}`;
-  const how = info.alt ? `Alt+${info.alt}` : `Character Map: search "${info.name}"`;
-  return `${code} ${info.name} - ${how}`;
-}
-
-export const countSpecialChars = (content: string) => [...content].filter(isSpecialChar).length;
 
 /** Every special character across all files, most frequent first. */
 export const SPECIAL_CHAR_USAGE = Object.entries(

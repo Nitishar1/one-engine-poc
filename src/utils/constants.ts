@@ -14,6 +14,7 @@ export const STORAGE_KEYS = {
   theme: 'oneengine-theme',
   sidebar: 'oneengine-sidebar',
   typingProgress: 'oneengine-typing-done',
+  typingProgressLite: 'oneengine-lite-typing-done',
   signOut: 'oneengine-sign-out',
 } as const;
 
