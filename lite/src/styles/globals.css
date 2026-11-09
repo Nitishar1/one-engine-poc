@@ -142,10 +142,11 @@ textarea:focus-visible,
   transform: translateX(3px);
 }
 
+/* Only our own (oe-) animations: antd needs its open / close animations to finish. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  [class*='oe-'],
+  [class*='oe-']::before,
+  [class*='oe-']::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

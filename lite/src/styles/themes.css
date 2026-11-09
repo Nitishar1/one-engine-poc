@@ -729,14 +729,13 @@
   padding: 12px 20px !important;
 }
 
+/* Solid popups: no blur (backdrop-filter), which some remote desktops / no-GPU PCs fail to paint. */
 .ant-select-dropdown,
 .ant-dropdown-menu,
 .ant-popover-inner,
 .ant-picker-dropdown .ant-picker-panel-container {
   border: 1px solid var(--oe-border-strong);
-  background: color-mix(in srgb, var(--oe-surface-elevated) 92%, transparent) !important;
-  backdrop-filter: saturate(160%) blur(var(--oe-blur));
-  -webkit-backdrop-filter: saturate(160%) blur(var(--oe-blur));
+  background: var(--oe-surface-elevated) !important;
 }
 
 .ant-dropdown-menu .ant-dropdown-menu-item {
