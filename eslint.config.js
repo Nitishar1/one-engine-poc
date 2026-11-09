@@ -6,7 +6,8 @@ import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage'] },
+  // lite/ is a separate app (OneEngine Lite) with its own tooling.
+  { ignores: ['dist', 'coverage', 'lite'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended, prettier],
     files: ['**/*.{ts,tsx}'],

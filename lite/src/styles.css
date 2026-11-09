@@ -1,0 +1,82 @@
+/* Only layout rules live here; Ant Design styles its own components (inputs, dropdowns...). */
+
+body {
+  margin: 0;
+  background: #f5f7fb;
+}
+
+.centered {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* Login */
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-card .ant-alert {
+  margin-bottom: 16px;
+}
+
+/* App shell */
+.app {
+  min-height: 100vh;
+}
+
+.brand {
+  padding: 18px 24px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.app-header-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.app-content {
+  padding: 24px;
+}
+
+/* Pages */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.page-header h3 {
+  margin: 0;
+}
+
+.page-alert {
+  margin-bottom: 16px;
+}

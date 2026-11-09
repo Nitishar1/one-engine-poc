@@ -1,17 +1,16 @@
 /**
- * Files of the separate OneEngine Lite project for the /ref2 typing reference. That project
- * lives next to this repo (`../oneEngine_lite`) and is read at build time; the list is empty
- * when the folder isn't there.
+ * Files of OneEngine Lite (the separate app in `lite/`) for the /ref2 typing reference, read
+ * as raw text at build time.
  */
 import { countLines, mkdirCommand, type ReferenceGroup, type SourceFile } from './referenceUtils';
 
-/** Folder name of the Lite project, next to this repo. */
+/** Folder name to create the project in on the lab laptop. */
 export const LITE_FOLDER = 'oneEngine_lite';
 
-const ROOT = `../../../../../${LITE_FOLDER}/`;
+const ROOT = '/lite/';
 
 const modules: Record<string, unknown> = {
-  ...import.meta.glob('../../../../../oneEngine_lite/src/**/*', {
+  ...import.meta.glob('/lite/src/**/*', {
     query: '?raw',
     import: 'default',
     eager: true,
@@ -19,13 +18,13 @@ const modules: Record<string, unknown> = {
   // `exhaustive` so dotfiles (.env.example, .gitignore) are found too.
   ...import.meta.glob(
     [
-      '../../../../../oneEngine_lite/package.json',
-      '../../../../../oneEngine_lite/.env.example',
-      '../../../../../oneEngine_lite/.gitignore',
-      '../../../../../oneEngine_lite/tsconfig.json',
-      '../../../../../oneEngine_lite/vite.config.ts',
-      '../../../../../oneEngine_lite/index.html',
-      '../../../../../oneEngine_lite/README.md',
+      '/lite/package.json',
+      '/lite/.env.example',
+      '/lite/.gitignore',
+      '/lite/tsconfig.json',
+      '/lite/vite.config.ts',
+      '/lite/index.html',
+      '/lite/README.md',
     ],
     { query: '?raw', import: 'default', eager: true, exhaustive: true },
   ),

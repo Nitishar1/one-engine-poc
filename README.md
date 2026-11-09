@@ -48,6 +48,13 @@ CORS setup is needed. In production, serve the app and the API from the same ori
 (reverse proxy `/api` to the backend). Production builds ignore `VITE_USE_MOCKS=true` unless
 `VITE_ALLOW_MOCKS_IN_PRODUCTION=true`.
 
+## OneEngine Lite (`lite/`)
+
+`lite/` is a separate, minimal app (login, a backend-driven menu and a Configurations page) with
+its own `package.json`; it does not share code with OneEngine. Run it with
+`cd lite && npm install && npm run dev` (http://localhost:5174); see `lite/README.md`.
+`/ref2` in this app shows its files in typing order for recreating it by hand.
+
 ## Architecture
 
 ```

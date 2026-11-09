@@ -1,4 +1,4 @@
-import { loadEnv, searchForWorkspaceRoot } from 'vite';
+import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -15,8 +15,6 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 5173,
-      // /ref2 reads the files of the sibling OneEngine Lite project.
-      fs: { allow: [searchForWorkspaceRoot(process.cwd()), '../oneEngine_lite'] },
       // Forwards /api to the backend so the browser sees one origin (no CORS, first-party cookies).
       proxy: API_PROXY_TARGET
         ? { '/api': { target: API_PROXY_TARGET, changeOrigin: true, secure: true } }
