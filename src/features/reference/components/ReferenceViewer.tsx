@@ -20,6 +20,8 @@ import { useHotkey } from '@/hooks/useHotkey';
 import { APP_CONFIG } from '@/utils/constants';
 import { countSpecialChars, type ReferenceGroup, type SourceFile } from '../utils/referenceUtils';
 import { createZip, downloadBlob, downloadText } from '../utils/download';
+import type { FileChange } from '../utils/liteChanges';
+import { ChangeBadge } from './ChangeBadge';
 import { CodeView, type CodeSize } from './CodeView';
 
 /** Small per-browser setting (text size, marked lines); falls back to `initial`. */
@@ -80,6 +82,8 @@ interface ReferenceViewerProps {
   downloadName: string;
   /** Shown before the first file; receives the size of the required files. */
   renderSetup: (required: { files: number; lines: number }) => ReactNode;
+  /** Files new or changed in the latest update, by path: badged and filterable in the list. */
+  changes?: Record<string, FileChange>;
 }
 
 /**
@@ -93,10 +97,13 @@ export function ReferenceViewer({
   storageKey,
   downloadName,
   renderSetup,
+  changes = {},
 }: ReferenceViewerProps) {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const [filter, setFilter] = useState('');
+  const [onlyUpdated, setOnlyUpdated] = useState(false);
+  const updatedCount = files.filter((f) => changes[f.path]).length;
   const { done, toggle } = useDoneFiles(storageKey);
   const required = useMemo(() => {
     const ids = groups.filter((g) => g.required).map((g) => g.id);
@@ -153,8 +160,10 @@ export function ReferenceViewer({
 
   const visible = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    return q ? files.filter((f) => f.path.toLowerCase().includes(q)) : files;
-  }, [filter, files]);
+    return files.filter(
+      (f) => (!q || f.path.toLowerCase().includes(q)) && (!onlyUpdated || changes[f.path]),
+    );
+  }, [filter, files, onlyUpdated, changes]);
 
   const doneRequired = required.filter((f) => done.has(f.path));
   const doneLines = doneRequired.reduce((sum, f) => sum + f.lines, 0);
@@ -208,6 +217,19 @@ export function ReferenceViewer({
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />
+            {updatedCount > 0 && (
+              <Segmented<'all' | 'updated'>
+                block
+                size="small"
+                className="!mt-2"
+                value={onlyUpdated ? 'updated' : 'all'}
+                onChange={(v) => setOnlyUpdated(v === 'updated')}
+                options={[
+                  { label: `All files (${files.length})`, value: 'all' },
+                  { label: `Updated only (${updatedCount})`, value: 'updated' },
+                ]}
+              />
+            )}
           </div>
           <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
             <button
@@ -267,6 +289,7 @@ export function ReferenceViewer({
                           <span className="-ml-2 shrink-0">
                             {f.path.slice(f.path.lastIndexOf('/') + 1)}
                           </span>
+                          {changes[f.path] && <ChangeBadge status={changes[f.path].status} />}
                           <span className="ml-auto shrink-0 tabular-nums text-fg-muted">
                             {f.lines}
                           </span>
@@ -290,6 +313,7 @@ export function ReferenceViewer({
                 <h1 className="m-0 min-w-0 break-all font-mono text-[16px] font-semibold">
                   {file.path}
                 </h1>
+                {changes[file.path] && <ChangeBadge status={changes[file.path].status} />}
                 <span className="text-[12.5px] text-fg-muted">
                   {file.lines} lines
                   {countSpecialChars(file.content) > 0 &&
@@ -335,6 +359,15 @@ export function ReferenceViewer({
                   </AppButton>
                 </div>
               </div>
+              {changes[file.path] && (
+                <p className="m-0 mb-3 rounded-[var(--oe-radius)] border border-line bg-surface-alt px-3 py-2 text-[13px] text-fg-secondary">
+                  <b className="text-fg">
+                    {changes[file.path].status === 'new' ? 'New file' : 'Changed'} in the latest
+                    update:
+                  </b>{' '}
+                  {changes[file.path].note}
+                </p>
+              )}
               <p className="m-0 mb-2 text-[12.5px] text-fg-muted">
                 Click a line to mark where you are; lines above it are dimmed.
               </p>

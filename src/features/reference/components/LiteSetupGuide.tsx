@@ -1,4 +1,7 @@
+import { Link } from 'react-router-dom';
 import { AppCard } from '@/components/common/AppCard';
+import { LITE_UPDATES } from '../utils/liteChanges';
+import { ChangeBadge } from './ChangeBadge';
 import { LITE_FILES, LITE_FILE_LINES, LITE_FOLDER, LITE_FOLDER_LINES } from '../utils/liteFiles';
 import { Code, Command, Step } from './GuideParts';
 
@@ -16,6 +19,74 @@ const PAGES = [
   'DataSource',
 ];
 
+/** Updates to Lite, newest first: what changed and which files to create or retype. */
+function UpdatesCard() {
+  if (!LITE_UPDATES.length) return null;
+  return (
+    <AppCard
+      title="What's new: pages and files changed"
+      description={`Already have Lite on the lab laptop? Only create or retype the files listed here. In the file list on the left, use "Updated only" to see just these.`}
+    >
+      <div className="flex flex-col gap-5">
+        {LITE_UPDATES.map((update, i) => {
+          const created = update.files.filter((f) => f.status === 'new').length;
+          const changed = update.files.length - created;
+          return (
+            <section key={`${update.date}-${update.title}`}>
+              <p className="m-0 flex flex-wrap items-center gap-2 text-[14px] font-semibold text-fg">
+                {update.title}
+                <span className="text-[12px] font-normal text-fg-muted">
+                  {update.date} · {created} new, {changed} changed
+                  {i === 0 ? ' · latest' : ''}
+                </span>
+              </p>
+              <p className="m-0 mb-2 mt-1 text-[13.5px] leading-relaxed text-fg-secondary">
+                {update.summary}
+              </p>
+              <p className="m-0 mb-1 text-[12px] font-semibold uppercase tracking-[0.06em] text-fg-muted">
+                Pages
+              </p>
+              <ul className="m-0 mb-3 flex list-none flex-wrap gap-2 p-0">
+                {update.pages.map((page) => (
+                  <li
+                    key={page.name}
+                    className="flex items-center gap-2 rounded-[var(--oe-radius)] border border-line px-2.5 py-1 text-[13px] text-fg"
+                  >
+                    <ChangeBadge status={page.status} />
+                    {page.name}
+                  </li>
+                ))}
+              </ul>
+              <p className="m-0 mb-1 text-[12px] font-semibold uppercase tracking-[0.06em] text-fg-muted">
+                Files
+              </p>
+              <ul className="m-0 flex list-none flex-col divide-y divide-line rounded-[var(--oe-radius)] border border-line p-0">
+                {update.files.map((f) => (
+                  <li
+                    key={f.path}
+                    className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2"
+                  >
+                    <ChangeBadge status={f.status} />
+                    <Link
+                      to={`?file=${encodeURIComponent(f.path)}`}
+                      className="break-all font-mono text-[12.5px] text-primary hover:underline"
+                    >
+                      {f.path}
+                    </Link>
+                    <span className="min-w-0 basis-full text-[12.5px] text-fg-muted sm:basis-auto sm:flex-1">
+                      {f.note}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+    </AppCard>
+  );
+}
+
 /** Step-by-step setup for creating OneEngine Lite on the lab laptop. */
 export function LiteSetupGuide({
   requiredFiles,
@@ -26,6 +97,7 @@ export function LiteSetupGuide({
 }) {
   return (
     <div className="flex max-w-4xl flex-col gap-5">
+      <UpdatesCard />
       <AppCard
         title="What you are building"
         description={`${requiredFiles} files, ${requiredLines.toLocaleString()} lines. All plain ASCII: no special characters to type.`}
@@ -143,7 +215,7 @@ export function LiteSetupGuide({
           <Step n={7} title="Switch to the real backend (when it is ready)">
             In <Code>.env</Code> set:
             <Command>
-              {'VITE_USE_MOCKS=false\nAPI_PROXY_TARGET=http://<backend-host>:<port>'}
+              {'VITE_USE_MOCKS=false\nAPI_PROXY_TARGET=http://localhost/OneEngine.Api'}
             </Command>
             Stop the dev server (Ctrl+C) and run <Code>npm run dev</Code> again. The endpoints the
             backend must provide are listed in <Code>README.md</Code>.
