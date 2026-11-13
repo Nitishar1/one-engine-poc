@@ -7,7 +7,6 @@ import type { LockedAccount } from '@/features/configurations/lockedAccounts/loc
 import type { MenuEntity } from '@/features/configurations/menus/menu.schema';
 import type { Report } from '@/features/configurations/reports/report.schema';
 import type { Role } from '@/features/configurations/roles/role.schema';
-import type { AppUser } from '@/features/configurations/users/user.schema';
 import type { ExecutionRecord } from '@/features/home/types/home.types';
 
 /** Small demo data set for the mock backend: just enough to try every screen. */
@@ -71,11 +70,11 @@ export const menusSeed: MenuEntity[] = [
     'm-config',
   ),
   menu('m-role', 'Role', '/configurations/roles', 'users', 3, 'm-config'),
-  menu('m-user', 'User', '/users', 'user', 4, 'm-config'),
+  menu('m-user', 'User', '/configurations/users', 'user', 4, 'm-config'),
   menu('m-authz', 'Authorization', '/configurations/authorization', 'shield', 5, 'm-config'),
-  menu('m-domain', 'Domain', '/domains', 'globe', 6, 'm-config'),
+  menu('m-domain', 'Domain', '/configurations/domains', 'globe', 6, 'm-config'),
   menu('m-locked', 'Locked Accounts', '/configurations/locked-accounts', 'lock', 7, 'm-config'),
-  menu('m-menu', 'Menu', '/menus', 'menu', 8, 'm-config'),
+  menu('m-menu', 'Menu', '/configurations/menus', 'menu', 8, 'm-config'),
   menu(
     'm-report-designer',
     'Report Designer',
@@ -150,15 +149,21 @@ export const domainsSeed: Domain[] = [
   },
 ];
 
-export const usersSeed: AppUser[] = [
+/** Users the mock sign-in knows (roles decide the sidebar). */
+export interface SeedUser {
+  id: string;
+  userName: string;
+  domainId: string;
+  roleIds: string[];
+  modifiedBy: string;
+  modifiedOn: string;
+}
+
+export const usersSeed: SeedUser[] = [
   {
     id: 'usr-super',
     userName: 'SuperUser',
     domainId: 'dom-local',
-    timeZoneId: '1',
-    homeUrl: '/home',
-    homeUrlId: 'm-home',
-    isActive: true,
     roleIds: ['role-admin'],
     ...audit(50),
   },
@@ -166,10 +171,6 @@ export const usersSeed: AppUser[] = [
     id: 'usr-rk',
     userName: 'superadmin',
     domainId: 'dom-local',
-    timeZoneId: '1',
-    homeUrl: '/home',
-    homeUrlId: 'm-home',
-    isActive: true,
     roleIds: ['role-admin', 'role-dev'],
     ...audit(10, 'superadmin'),
   },
@@ -177,10 +178,6 @@ export const usersSeed: AppUser[] = [
     id: 'usr-oe',
     userName: 'oeUser',
     domainId: 'dom-oelab',
-    timeZoneId: '1',
-    homeUrl: '/home',
-    homeUrlId: 'm-home',
-    isActive: true,
     roleIds: ['role-test'],
     ...audit(2),
   },

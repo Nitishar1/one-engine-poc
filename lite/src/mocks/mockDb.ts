@@ -47,10 +47,11 @@ export class MockCollection<T extends BaseEntity> {
     return this.items.some(predicate);
   }
 
-  create(input: EntityInput<T>, user: string): T {
+  /** `id` is generated unless given (e.g. the int id the real API would assign). */
+  create(input: EntityInput<T>, user: string, id?: string): T {
     const item = {
       ...input,
-      id: generateId(this.name),
+      id: id ?? generateId(this.name),
       modifiedBy: user,
       modifiedOn: new Date().toISOString(),
     } as T;

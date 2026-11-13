@@ -6,7 +6,6 @@ import type { Domain } from '@/features/configurations/domains/domain.schema';
 import type { MenuEntity } from '@/features/configurations/menus/menu.schema';
 import type { Report } from '@/features/configurations/reports/report.schema';
 import type { Role } from '@/features/configurations/roles/role.schema';
-import type { AppUser } from '@/features/configurations/users/user.schema';
 import type { AuthUser, LoginRequest } from '@/features/auth/types/auth.types';
 import type { HomeSummary } from '@/features/home/types/home.types';
 import { API_ENDPOINTS } from '@/services/api/apiEndpoints';
@@ -26,6 +25,7 @@ import {
   rolesSeed,
   TIME_ZONES,
   usersSeed,
+  type SeedUser,
 } from '../data/seed';
 import { crudRoutes } from './crudHandlers';
 import { fail, ok, type MockResult, type MockRoute } from './types';
@@ -42,7 +42,7 @@ interface RoleAuthorization extends BaseEntity {
 const db = {
   menus: new MockCollection<MenuEntity>('menus', menusSeed),
   roles: new MockCollection<Role>('roles', rolesSeed),
-  users: new MockCollection<AppUser>('users-v2', usersSeed),
+  users: new MockCollection<SeedUser>('users', usersSeed),
   domains: new MockCollection<Domain>('domains', domainsSeed),
   agentParameters: new MockCollection<AgentParameterGroup>('agentParameters', agentParametersSeed),
   appSettings: new MockCollection<AppSetting>('appSettings', appSettingsSeed),
@@ -272,41 +272,68 @@ const hideConnectionString = ({ connectionString: _hidden, ...rest }: DataSource
 
 // ---------------------------------------------------------------- users page (OneEngine.Api shapes)
 
-const USER_API = API_ENDPOINTS.userAdmin;
+/** OneEngine.Api uses int ids: rows are numbered 1, 2, 3... in list order. */
+const numberOf = <T extends BaseEntity>(items: T[], id: string) =>
+  items.findIndex((i) => i.id === id) + 1;
+const byNumber = <T extends BaseEntity>(items: T[], n: unknown) => items[Number(n) - 1];
 
-/** Menu ids the given roles may open; Admin roles open everything. */
-const allowedMenuIds = (roleIds: string[]) => {
-  const menus = db.menus.all();
-  if (roleIds.some((id) => db.roles.find(id)?.isAdmin)) return new Set(menus.map((m) => m.id));
-  return new Set(roleIds.flatMap((roleId) => db.authorization.find(roleId)?.menuIds ?? []));
-};
+interface ApiUserRow extends BaseEntity {
+  userID: number;
+  userName: string;
+  domainID: number;
+  domainName: string;
+  timeZoneID: number;
+  timeZoneName: string;
+  homeUrlID: number;
+  homeUrl: string;
+  allowedRoles: string;
+  isActive: boolean;
+  isDeleted: boolean;
+}
 
-const toApiUser = (u: AppUser) => ({
-  userID: u.id,
-  userName: u.userName,
-  domainID: u.domainId,
-  timeZoneID: u.timeZoneId,
-  homeUrl: u.homeUrl,
-  homeUrlID: u.homeUrlId || 0,
-  allowedRoles: u.roleIds.join(','),
-  isActive: u.isActive,
-  modifiedBy: u.modifiedBy,
-  modifiedOn: u.modifiedOn,
-});
+const apiUsers = new MockCollection<ApiUserRow>(
+  'api-users',
+  usersSeed.map((u, i) => {
+    const domains = db.domains.all();
+    const roles = db.roles.all();
+    return {
+      id: String(i + 1),
+      userID: i + 1,
+      userName: u.userName,
+      domainID: numberOf(domains, u.domainId),
+      domainName: domains.find((d) => d.id === u.domainId)?.domainName ?? '',
+      timeZoneID: 1,
+      timeZoneName: TIME_ZONES[0],
+      homeUrlID: numberOf(db.menus.all(), 'm-home'),
+      homeUrl: '/home',
+      allowedRoles: u.roleIds.map((id) => numberOf(roles, id)).join(','),
+      isActive: true,
+      isDeleted: false,
+      modifiedBy: u.modifiedBy,
+      modifiedOn: u.modifiedOn,
+    };
+  }),
+);
 
 const userAdminRoutes: MockRoute[] = [
   {
     method: 'GET',
-    pattern: USER_API.domains,
-    handler: () => ok(db.domains.all().map((d) => ({ domainID: d.id, domainName: d.domainName }))),
+    pattern: API_ENDPOINTS.lookups.timeZones,
+    handler: () => ok(TIME_ZONES.map((name, i) => ({ timezoneID: i + 1, timezoneName: name }))),
   },
   {
     method: 'GET',
-    pattern: USER_API.roles,
+    pattern: API_ENDPOINTS.lookups.domains,
+    handler: () =>
+      ok(db.domains.all().map((d, i) => ({ domainID: i + 1, domainName: d.domainName }))),
+  },
+  {
+    method: 'GET',
+    pattern: API_ENDPOINTS.lookups.userRoles,
     handler: () =>
       ok(
-        db.roles.all().map((r) => ({
-          roleID: r.id,
+        db.roles.all().map((r, i) => ({
+          roleID: i + 1,
           roleName: r.roleName,
           isAdmin: r.isAdmin,
           isDeleted: false,
@@ -314,71 +341,74 @@ const userAdminRoutes: MockRoute[] = [
       ),
   },
   {
-    method: 'GET',
-    pattern: USER_API.timeZones,
-    handler: () => ok(TIME_ZONES.map((name, i) => ({ timezoneID: i + 1, timezoneName: name }))),
-  },
-  {
     method: 'POST',
-    pattern: USER_API.menusByRole,
+    pattern: API_ENDPOINTS.lookups.menusByRole,
     handler: ({ body }) => {
-      const roleIds = (body as { roleIds?: unknown }).roleIds;
-      if (!Array.isArray(roleIds)) return fail(400, 'roleIds is required');
-      const allowed = allowedMenuIds(roleIds.map(String));
+      const ids = (body as { roleIds?: unknown }).roleIds;
+      if (!Array.isArray(ids)) return fail(400, 'roleIds is required');
+      const roles = ids.map((n) => byNumber(db.roles.all(), n)).filter(Boolean);
+      const menus = db.menus.all();
+      // Admin roles open every page; other roles what Authorization gives them.
+      const allowed = new Set(
+        roles.some((r) => r.isAdmin)
+          ? menus.map((m) => m.id)
+          : roles.flatMap((r) => db.authorization.find(r.id)?.menuIds ?? []),
+      );
       return ok(
-        db.menus
-          .all()
+        menus
+          .map((m, i) => ({ menuID: i + 1, menuName: m.menuName, menuUrl: m.menuUrl, id: m.id }))
           .filter((m) => m.menuUrl && allowed.has(m.id))
-          .map((m) => ({ menuID: m.id, menuName: m.menuName, menuUrl: m.menuUrl })),
+          .map(({ id: _id, ...m }) => m),
       );
     },
   },
-  { method: 'GET', pattern: USER_API.users, handler: () => ok(db.users.all().map(toApiUser)) },
+  { method: 'GET', pattern: API_ENDPOINTS.users, handler: () => ok(apiUsers.all()) },
   {
     method: 'GET',
-    pattern: `${USER_API.users}/:id`,
+    pattern: `${API_ENDPOINTS.users}/:id`,
     handler: ({ params }) => {
-      const user = db.users.find(params.id);
-      return user ? ok(toApiUser(user)) : fail(404, 'User not found');
+      const user = apiUsers.find(params.id);
+      return user ? ok(user) : fail(404, 'User not found');
     },
   },
   {
-    // No PUT on the real API: userID 0 creates, any other id updates.
+    // The real API has no PUT: userID 0 creates, any other id updates.
     method: 'POST',
-    pattern: USER_API.users,
+    pattern: API_ENDPOINTS.users,
     handler: ({ body, user }) => {
       const b = body as Record<string, unknown>;
-      const id = String(b.userID ?? 0);
-      const input = {
-        userName: String(b.userName ?? '').trim(),
-        domainId: String(b.domainID ?? ''),
-        timeZoneId: String(b.timeZoneID ?? ''),
-        homeUrl: String(b.homeUrl ?? ''),
-        homeUrlId: b.homeUrlID ? String(b.homeUrlID) : '',
-        roleIds: String(b.allowedRoles ?? '')
-          .split(',')
-          .filter(Boolean),
-        isActive: b.isActive !== false,
-      };
-      if (!input.userName || !input.domainId || !input.timeZoneId || !input.roleIds.length)
+      const userName = String(b.userName ?? '').trim();
+      const domain = byNumber(db.domains.all(), b.domainID);
+      const timeZoneName = TIME_ZONES[Number(b.timeZoneID) - 1];
+      if (!userName || !domain || !timeZoneName || !b.allowedRoles)
         return fail(400, 'User name, domain, time zone and roles are required');
-      const isNew = id === '0';
-      if (
-        db.users.some(
-          (u) => u.id !== id && u.userName.toLowerCase() === input.userName.toLowerCase(),
-        )
-      )
+      const id = String(b.userID ?? 0);
+      if (apiUsers.some((u) => u.id !== id && u.userName.toLowerCase() === userName.toLowerCase()))
         return fail(409, 'User already exists');
-      const saved = isNew
-        ? db.users.create(input, user ?? 'system')
-        : db.users.update(id, input, user ?? 'system');
-      return saved ? ok(toApiUser(saved)) : fail(404, 'User not found');
+      const nextId = Math.max(0, ...apiUsers.all().map((u) => u.userID)) + 1;
+      const row = {
+        userID: id === '0' ? nextId : Number(id),
+        userName,
+        domainID: Number(b.domainID),
+        domainName: domain.domainName,
+        timeZoneID: Number(b.timeZoneID),
+        timeZoneName,
+        homeUrlID: Number(b.homeUrlID ?? 0),
+        homeUrl: String(b.homeUrl ?? ''),
+        allowedRoles: String(b.allowedRoles),
+        isActive: b.isActive !== false,
+        isDeleted: false,
+      };
+      if (id === '0') return ok(apiUsers.create(row, user ?? 'system', String(row.userID)));
+      const saved = apiUsers.update(id, row, user ?? 'system');
+      return saved ? ok(saved) : fail(404, 'User not found');
     },
   },
   {
     method: 'DELETE',
-    pattern: `${USER_API.users}/:id`,
-    handler: ({ params }) => (db.users.remove(params.id) ? ok(null) : fail(404, 'User not found')),
+    pattern: `${API_ENDPOINTS.users}/:id`,
+    handler: ({ params }) =>
+      apiUsers.remove(params.id) ? ok(null, 'User deleted') : fail(404, 'User not found'),
   },
 ];
 

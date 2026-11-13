@@ -29,18 +29,19 @@ export const API_ENDPOINTS = {
   dashboard: {
     summary: '/dashboard/summary',
   },
-  /** OneEngine.Api routes used by the Users page (names and casing as the backend has them). */
-  userAdmin: {
-    users: '/Users',
-    domains: '/domains',
-    roles: '/UserRoles',
+  /** Lists used by the user form (OneEngine.Api routes). */
+  lookups: {
     timeZones: '/timezones',
+    domains: '/domains',
+    userRoles: '/UserRoles',
     /** POST { roleIds: number[] } -> menus those roles can open (Home URL list). */
     menusByRole: '/menu/byUserRole',
   },
   agentParameters: '/configurations/agent-parameters',
   appSettings: '/configurations/app-settings',
   roles: '/configurations/roles',
+  /** OneEngine.Api users: GET list, GET/DELETE /:id, POST saves (userID 0 = new). */
+  users: '/Users',
   authorization: (roleId: string) => resourcePath('/configurations/authorization', roleId),
   domains: '/configurations/domains',
   lockedAccounts: '/configurations/locked-accounts',

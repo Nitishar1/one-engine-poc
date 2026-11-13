@@ -25,11 +25,13 @@ export interface LiteUpdate {
 export const LITE_UPDATES: LiteUpdate[] = [
   {
     date: '13 Nov 2026',
-    title: 'Users page on the real OneEngine.Api',
+    title: 'Users page finished on the real OneEngine.Api',
     summary:
-      'Add / Edit / Delete User now use /api/Users. Domain, Time Zone and Allowed Roles come from ' +
-      'the API, and Home URL only lists the pages the checked roles can open ' +
-      '(POST /api/menu/byUserRole). Edit opens with the saved values filled in.',
+      'Built on the lab-laptop version of the Users page (AppUser with userID, domainID, ' +
+      'timeZoneID...). Added: Domain / Time Zone / Allowed Roles lists from the API, Home URL ' +
+      'limited to the pages of the checked roles (POST /api/menu/byUserRole), edit opens with ' +
+      'the saved values, save via POST /api/Users (no PUT) and delete. Each file starts with a ' +
+      'comment listing what it does.',
     pages: [{ name: 'Configurations > User (list, Add User, Edit User)', status: 'changed' }],
     files: [
       {
@@ -38,44 +40,44 @@ export const LITE_UPDATES: LiteUpdate[] = [
         note: 'Comment with the OneEngine.Api proxy address (only a comment line).',
       },
       {
-        path: 'src/config/routes.ts',
-        status: 'changed',
-        note: 'users: /users, domains: /domains, menus: /menus (no /configurations prefix).',
-      },
-      {
         path: 'src/services/api/apiEndpoints.ts',
         status: 'changed',
-        note: 'New userAdmin block (/Users, /domains, /UserRoles, /timezones, /menu/byUserRole); lookups and users removed.',
+        note: "users: '/Users'; lookups: timeZones '/timezones', domains, userRoles, menusByRole.",
       },
       {
         path: 'src/features/configurations/users/user.schema.ts',
         status: 'changed',
-        note: 'timeZoneId, homeUrlId, isActive; option types for the API lists.',
+        note: 'Your AppUser and form rules, plus DomainOption, RoleOption, TimeZoneOption, HomeUrlOption.',
       },
       {
         path: 'src/features/configurations/users/user.api.ts',
         status: 'changed',
-        note: 'Rewritten: OneEngine.Api user service and the dropdown / Home URL hooks.',
+        note: 'Your list / get, plus save via POST, delete, and the domain / role / time zone / Home URL hooks.',
       },
       {
         path: 'src/features/configurations/users/UserListPage.tsx',
         status: 'changed',
-        note: 'Rewritten: names from the API lists, Home URL and Status columns.',
+        note: 'Your columns, plus names looked up by id, Allowed Roles and Home URL columns.',
       },
       {
         path: 'src/features/configurations/users/UserFormPage.tsx',
         status: 'changed',
-        note: 'Rewritten: API dropdowns, roles drive Home URL, Active checkbox, edit prefill.',
+        note: 'Your form and payload, plus API lists, roles drive Home URL, edit prefill. Debug console.log lines left out.',
       },
       {
         path: 'src/mocks/data/seed.ts',
         status: 'changed',
-        note: 'Menu paths /users, /domains, /menus; users get timeZoneId, homeUrlId, isActive.',
+        note: 'usersSeed uses a small SeedUser type (only for the mock sign-in).',
+      },
+      {
+        path: 'src/mocks/mockDb.ts',
+        status: 'changed',
+        note: 'create() takes an optional id.',
       },
       {
         path: 'src/mocks/handlers/index.ts',
         status: 'changed',
-        note: 'New userAdminRoutes block (mock of the OneEngine.Api user endpoints); old users / time-zone routes removed.',
+        note: 'New userAdminRoutes block: mock of the OneEngine.Api user endpoints with int ids.',
       },
     ],
   },

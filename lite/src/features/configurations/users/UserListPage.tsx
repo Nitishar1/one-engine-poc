@@ -1,8 +1,17 @@
+/**
+ * Users grid.
+ *
+ * Functionality:
+ * - Lists every user from GET /api/Users with search, sort, and Add / Edit / Delete buttons
+ *   (Delete calls DELETE /api/Users/{id} after a confirmation).
+ * - Domain, time zone and role names come from the user row; when the API leaves a name out,
+ *   it is looked up by id in the domain / time zone / role lists.
+ * - Modified By / Modified On columns are added by CrudListPage.
+ */
 import { useMemo } from 'react';
 import { Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { CrudListPage } from '@/components/common/CrudListPage';
-import { StatusTag } from '@/components/common/StatusTag';
 import { ROUTES } from '@/config/routes';
 import { useTimeZones, useUserDomains, userHooks, useUserRoles } from './user.api';
 import type { AppUser } from './user.schema';
@@ -11,10 +20,10 @@ const nameOf = (row: AppUser) => row.userName;
 
 export default function UserListPage() {
   const domains = useUserDomains();
-  const roles = useUserRoles();
   const timeZones = useTimeZones();
+  const roles = useUserRoles();
 
-  // id -> name lookups (role tokens may already be names; those are shown as they are).
+  // id -> name, for rows that only carry ids.
   const names = useMemo(
     () => ({
       domain: new Map((domains.data ?? []).map((d) => [String(d.domainID), d.domainName])),
@@ -24,57 +33,50 @@ export default function UserListPage() {
     [domains.data, timeZones.data, roles.data],
   );
 
-  const columns = useMemo<ColumnsType<AppUser>>(
-    () => [
-      {
-        title: 'User Name',
-        dataIndex: 'userName',
-        sorter: (a, b) => a.userName.localeCompare(b.userName),
-      },
-      {
-        title: 'Domain Name',
-        dataIndex: 'domainId',
-        render: (id: string) => names.domain.get(id) ?? '-',
-      },
-      {
-        title: 'Time Zone',
-        dataIndex: 'timeZoneId',
-        width: 220,
-        ellipsis: { showTitle: true },
-        render: (id: string) => names.timeZone.get(id) ?? '-',
-      },
-      {
-        title: 'Roles',
-        dataIndex: 'roleIds',
-        render: (ids: string[]) => (
-          <span className="flex flex-wrap gap-1">
-            {ids.map((id) => (
-              <Tag key={id}>{names.role.get(id) ?? id}</Tag>
-            ))}
-          </span>
-        ),
-      },
-      { title: 'Home URL', dataIndex: 'homeUrl', ellipsis: true },
-      {
-        title: 'Status',
-        dataIndex: 'isActive',
-        render: (active: boolean) => <StatusTag status={active ? 'Active' : 'Inactive'} />,
-      },
-    ],
-    [names],
-  );
+  const domainName = (row: AppUser) =>
+    row.domainName || names.domain.get(String(row.domainID)) || '-';
+  const timeZoneName = (row: AppUser) =>
+    row.timeZoneName || names.timeZone.get(String(row.timeZoneID)) || '-';
 
-  const searchValues = useMemo(
-    () => (row: AppUser) => [
-      row.userName,
-      row.homeUrl,
-      row.modifiedBy,
-      names.domain.get(row.domainId),
-      names.timeZone.get(row.timeZoneId),
-      ...row.roleIds.map((id) => names.role.get(id) ?? id),
-    ],
-    [names],
-  );
+  const searchValues = (row: AppUser) => [
+    row.userName,
+    domainName(row),
+    timeZoneName(row),
+    row.homeUrl,
+    row.modifiedBy,
+  ];
+
+  const columns: ColumnsType<AppUser> = [
+    {
+      title: 'User Name',
+      dataIndex: 'userName',
+      sorter: (a, b) => a.userName.localeCompare(b.userName),
+    },
+    {
+      title: 'Domain Name',
+      dataIndex: 'domainName',
+      render: (_, row) => domainName(row),
+    },
+    {
+      title: 'Time Zone',
+      dataIndex: 'timeZoneName',
+      width: 220,
+      ellipsis: { showTitle: true },
+      render: (_, row) => timeZoneName(row),
+    },
+    {
+      title: 'Allowed Roles',
+      dataIndex: 'roleIds',
+      render: (ids: string[] = []) => (
+        <span className="flex flex-wrap gap-1">
+          {ids.map((id) => (
+            <Tag key={id}>{names.role.get(id) ?? id}</Tag>
+          ))}
+        </span>
+      ),
+    },
+    { title: 'Home URL', dataIndex: 'homeUrl', ellipsis: true },
+  ];
 
   return (
     <CrudListPage

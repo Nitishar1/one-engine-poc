@@ -1,50 +1,73 @@
-import { z } from 'zod';
-import type { BaseEntity } from '@/types/common.types';
-import { identifier } from '@/utils/validators';
-
 /**
- * A user as the page works with it. Ids are kept as strings (select / checkbox values);
- * user.api.ts converts to and from the OneEngine.Api shape (`userID`, `domainID`, ...).
+ * User page types and form rules.
+ *
+ * Functionality:
+ * - AppUser is a user exactly as OneEngine.Api returns it (GET /api/Users, GET /api/Users/{id}).
+ * - userSchema validates the Add / Edit User form: user name, domain, time zone, at least one
+ *   role and a home URL are required.
+ * - The *Option types are the rows of the dropdown / checkbox lists the form loads from the API.
  */
+import { z } from 'zod';
+import { identifier } from '@/utils/validators';
+import type { BaseEntity } from '@/types/common.types';
+
 export interface AppUser extends BaseEntity {
+  userID: number;
   userName: string;
-  domainId: string;
-  timeZoneId: string;
-  /** Page opened after sign-in: a menu URL allowed for the user's roles. */
+
+  domainID: number;
+  domainName: string;
+
+  timeZoneID: number;
+  timeZoneName: string;
+
+  homeUrlID: number;
   homeUrl: string;
-  /** Menu id of the home URL ('' when unknown). */
-  homeUrlId: string;
-  /** Role ids (the API sends them as `allowedRoles`, a comma-separated string). */
-  roleIds: string[];
-  isActive: boolean;
+
+  /** Role ids as the API stores them: "1,2". */
+  allowedRoles?: string;
+  roleIds?: string[];
+
+  isActive?: boolean;
+
+  modifiedBy: string;
+  modifiedOn: string;
+
+  isDeleted: boolean;
 }
 
 export const userSchema = z.object({
   userName: identifier('User Name', 100),
   domainId: z.string().min(1, 'Domain Name is required'),
-  timeZoneId: z.string().min(1, 'Time Zone is required'),
+  timeZone: z.string().min(1, 'Time Zone is required'),
+  homeUrl: z.string().min(1, 'Home URL is required'),
   roleIds: z.array(z.string()).min(1, 'Select at least one role'),
-  homeUrlId: z.string().min(1, 'Home URL is required'),
-  isActive: z.boolean(),
 });
 
 export type UserFormValues = z.infer<typeof userSchema>;
 
-/** Option lists for the user form, as the API returns them. */
+/** GET /api/domains row. */
 export interface DomainOption {
-  domainID: number | string;
+  domainID: number;
   domainName: string;
 }
+
+/** GET /api/UserRoles row. */
 export interface RoleOption {
-  roleID: number | string;
+  roleID: number;
   roleName: string;
+  isDeleted?: boolean;
 }
+
+/** GET /api/timezones row. */
 export interface TimeZoneOption {
-  timezoneID: number | string;
+  timezoneID: number;
   timezoneName: string;
 }
+
+/** POST /api/menu/byUserRole row: a page the selected roles can open. */
 export interface HomeUrlOption {
-  menuID: number | string;
+  menuID: number;
   menuName: string;
   menuUrl: string;
 }
