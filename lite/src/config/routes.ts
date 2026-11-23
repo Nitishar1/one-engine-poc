@@ -15,6 +15,9 @@ export const ROUTES = {
   menus: '/configurations/menus',
   reports: '/configurations/report-designer',
   dataSources: '/configurations/data-sources',
+  /** Reports > Runbook Stats. Must match the menu URLs set on the backend. */
+  runbookDashboard: '/reports/runbook-stats/dashboard',
+  runbookStats: '/reports/runbook-stats/stats',
 } as const;
 
 /** Create page below a list page, e.g. /configurations/roles/new. */

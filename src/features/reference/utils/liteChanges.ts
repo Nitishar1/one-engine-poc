@@ -24,6 +24,61 @@ export interface LiteUpdate {
 
 export const LITE_UPDATES: LiteUpdate[] = [
   {
+    date: '23 Nov 2026',
+    title: 'Reports > Runbook Stats: Dashboard and Stats pages',
+    summary:
+      'Two new pages under Reports > Runbook Stats, with dummy data for now (in ' +
+      'runbookStats.api.ts; each hook has a TODO with the real API call). Dashboard: totals, ' +
+      'repositories by type, 14-day runs, most-run and recent runs. Stats: pick a runbook and ' +
+      'Submit for an overview; click a stage to open its timeline and logs.',
+    pages: [
+      { name: 'Reports > Runbook Stats > Dashboard', status: 'new' },
+      { name: 'Reports > Runbook Stats > Stats', status: 'new' },
+    ],
+    files: [
+      {
+        path: 'src/config/routes.ts',
+        status: 'changed',
+        note: 'runbookDashboard and runbookStats paths (must match the backend menu URLs).',
+      },
+      {
+        path: 'src/features/reports/runbookStats/runbookStats.schema.ts',
+        status: 'new',
+        note: 'Types for the dashboard, dropdowns and run activity; Stats filter rules.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/runbookStats.api.ts',
+        status: 'new',
+        note: 'Hooks + dummy data. Swap each fetch... body for its TODO http call later.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/RunbookActivityView.tsx',
+        status: 'new',
+        note: 'Run overview, stage progress strip, expandable stages with Timeline / Logs.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/RunbookDashboardPage.tsx',
+        status: 'new',
+        note: 'Dashboard page.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/RunbookStatsPage.tsx',
+        status: 'new',
+        note: 'Stats page: Tools Name / Runbook / Submit, then the activity view.',
+      },
+      {
+        path: 'src/config/pageRegistry.ts',
+        status: 'changed',
+        note: 'Registers the two pages (two entries at the end).',
+      },
+      {
+        path: 'src/mocks/data/seed.ts',
+        status: 'changed',
+        note: 'Mock menus: Runbook Stats group with Dashboard and Stats under Reports.',
+      },
+    ],
+  },
+  {
     date: '13 Nov 2026',
     title: 'Users page finished on the real OneEngine.Api',
     summary:

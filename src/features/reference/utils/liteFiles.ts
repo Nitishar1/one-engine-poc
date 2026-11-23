@@ -103,6 +103,7 @@ const ORDER = [
   'src/features/configurations/reports/',
   'src/features/configurations/lockedAccounts/',
   'src/features/configurations/authorization/',
+  'src/features/reports/',
   'src/config/pageRegistry.ts',
   'src/mocks/handlers/types.ts',
   'src/mocks/',
