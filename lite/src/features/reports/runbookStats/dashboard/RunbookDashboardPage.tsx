@@ -39,8 +39,12 @@ import { StatusTag } from '@/components/common/StatusTag';
 import { ROUTES } from '@/config/routes';
 import { useTheme } from '@/hooks/useTheme';
 import { formatDateTime, formatDuration } from '@/utils/formatters';
-import { useRunbookDashboard } from './runbookStats.api';
-import type { DailyRunPoint, RepositoryTypeCount, RunbookDashboard } from './runbookStats.schema';
+import { useRunbookDashboard } from '../stats/runbookStats.api';
+import type {
+  DailyRunPoint,
+  RepositoryTypeCount,
+  RunbookDashboard,
+} from '../stats/runbookStats.schema';
 
 // ---------------------------------------------------------------- colours
 

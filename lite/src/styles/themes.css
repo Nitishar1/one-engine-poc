@@ -440,16 +440,41 @@
     color var(--oe-duration-fast) var(--oe-ease) !important;
 }
 
-.oe-sidebar-menu .ant-menu-item .ant-menu-item-icon,
-.oe-sidebar-menu .ant-menu-submenu-title .ant-menu-item-icon {
-  color: var(--oe-text-muted);
-  transition: color var(--oe-duration-fast) var(--oe-ease);
+/* Colourful icons: every menu has a --tone (set per item in SidebarMenu.tsx); its icon sits on
+   a tile tinted with that colour. */
+.oe-sidebar-menu .oe-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  min-width: 26px !important;
+  height: 26px;
+  border-radius: 8px;
+  color: var(--tone, var(--oe-primary)) !important;
+  background: color-mix(in srgb, var(--tone, var(--oe-primary)) 15%, transparent);
+  transition:
+    background var(--oe-duration-fast) var(--oe-ease),
+    color var(--oe-duration-fast) var(--oe-ease),
+    transform var(--oe-duration) var(--oe-ease),
+    box-shadow var(--oe-duration-fast) var(--oe-ease) !important;
 }
 
-.oe-sidebar-menu .ant-menu-item:hover .ant-menu-item-icon,
-.oe-sidebar-menu .ant-menu-submenu-title:hover .ant-menu-item-icon,
-.oe-sidebar-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-item-icon {
-  color: var(--oe-text-primary);
+.oe-sidebar-menu .ant-menu-item:hover .oe-nav-icon,
+.oe-sidebar-menu .ant-menu-submenu-title:hover .oe-nav-icon {
+  background: color-mix(in srgb, var(--tone, var(--oe-primary)) 26%, transparent);
+  transform: scale(1.06);
+}
+
+/* The open / active group and the active page: solid gradient tile with a white icon. */
+.oe-sidebar-menu .ant-menu-item-selected .oe-nav-icon,
+.oe-sidebar-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .oe-nav-icon {
+  color: #fff !important;
+  background: linear-gradient(
+    135deg,
+    var(--tone, var(--oe-primary)),
+    color-mix(in srgb, var(--tone, var(--oe-primary)) 60%, #ffffff)
+  );
+  box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--tone, var(--oe-primary)) 55%, transparent);
 }
 
 .oe-sidebar-menu .ant-menu-submenu-selected > .ant-menu-submenu-title {
@@ -458,26 +483,13 @@
 
 .oe-sidebar-menu .ant-menu-item-selected {
   font-weight: 500;
-  background: var(--oe-sidebar-active-bg) !important;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--oe-primary) 16%, transparent);
+  color: var(--oe-text-primary) !important;
+  background: color-mix(in srgb, var(--tone, var(--oe-primary)) 14%, transparent) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone, var(--oe-primary)) 28%, transparent);
 }
 
-.oe-sidebar-menu .ant-menu-item .ant-menu-item-icon {
-  transition:
-    color var(--oe-duration-fast) var(--oe-ease),
-    transform var(--oe-duration) var(--oe-ease) !important;
-}
-
-.oe-sidebar-menu .ant-menu-item:hover .ant-menu-item-icon {
-  transform: translateX(1px);
-}
-
-.oe-sidebar-menu .ant-menu-item-selected .ant-menu-item-icon {
-  color: var(--oe-primary) !important;
-}
-
-/* Gradient accent bar on the active item; grows in when the selection changes. Sits inside the
-   item's left edge because antd clips menu items with overflow: hidden. */
+/* Accent bar on the active item, in the menu's colour; grows in when the selection changes.
+   Sits inside the item's left edge because antd clips menu items with overflow: hidden. */
 .oe-sidebar-menu .ant-menu-item-selected::before {
   content: '';
   position: absolute;
@@ -486,8 +498,8 @@
   bottom: 8px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: linear-gradient(180deg, var(--oe-primary), var(--oe-secondary));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--oe-primary) 60%, transparent);
+  background: var(--tone, var(--oe-primary));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tone, var(--oe-primary)) 60%, transparent);
   animation: oe-indicator-in 0.28s var(--oe-ease) both;
 }
 
@@ -512,7 +524,7 @@
   top: 4px;
   bottom: 4px;
   width: 1px;
-  background: var(--oe-border-strong);
+  background: color-mix(in srgb, var(--tone, var(--oe-border-strong)) 45%, transparent);
 }
 
 /* Nested active item: a dot on the guide line instead of the full bar. */

@@ -25,6 +25,40 @@ export interface LiteUpdate {
 export const LITE_UPDATES: LiteUpdate[] = [
   {
     date: '23 Nov 2026',
+    title: 'Runbook Stats split into dashboard / stats folders; colourful sidebar',
+    summary:
+      'Runbook Stats files now live in two folders (as on the lab laptop): dashboard/ holds ' +
+      'RunbookDashboardPage.tsx, stats/ holds the rest. The sidebar gives every menu its own ' +
+      'colour: tinted icon tiles, and the active page is highlighted in its menu colour.',
+    pages: [
+      { name: 'Sidebar (all pages)', status: 'changed' },
+      { name: 'Reports > Runbook Stats > Dashboard', status: 'changed' },
+    ],
+    files: [
+      {
+        path: 'src/components/layout/SidebarMenu.tsx',
+        status: 'changed',
+        note: 'MENU_TONES colour list; toMenuItems gives each menu a --tone and an icon tile.',
+      },
+      {
+        path: 'src/styles/themes.css',
+        status: 'changed',
+        note: 'Sidebar menu section: .oe-nav-icon tile, active item / accent bar / guide line in --tone.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/dashboard/RunbookDashboardPage.tsx',
+        status: 'changed',
+        note: "Moved into dashboard/; imports now '../stats/runbookStats.api' and '../stats/runbookStats.schema'.",
+      },
+      {
+        path: 'src/config/pageRegistry.ts',
+        status: 'changed',
+        note: 'Import paths: runbookStats/dashboard/RunbookDashboardPage and runbookStats/stats/RunbookStatsPage.',
+      },
+    ],
+  },
+  {
+    date: '23 Nov 2026',
     title: 'Colourful Runbook Dashboard',
     summary:
       'The Runbook Dashboard now uses colour: gradient tiles with white text, green / red ' +
@@ -32,7 +66,7 @@ export const LITE_UPDATES: LiteUpdate[] = [
     pages: [{ name: 'Reports > Runbook Stats > Dashboard', status: 'changed' }],
     files: [
       {
-        path: 'src/features/reports/runbookStats/RunbookDashboardPage.tsx',
+        path: 'src/features/reports/runbookStats/dashboard/RunbookDashboardPage.tsx',
         status: 'changed',
         note: 'Whole file replaced (colour palette at the top).',
       },
@@ -57,27 +91,27 @@ export const LITE_UPDATES: LiteUpdate[] = [
         note: 'runbookDashboard and runbookStats paths (must match the backend menu URLs).',
       },
       {
-        path: 'src/features/reports/runbookStats/runbookStats.schema.ts',
+        path: 'src/features/reports/runbookStats/stats/runbookStats.schema.ts',
         status: 'new',
         note: 'Types for the dashboard, dropdowns and run activity; Stats filter rules.',
       },
       {
-        path: 'src/features/reports/runbookStats/runbookStats.api.ts',
+        path: 'src/features/reports/runbookStats/stats/runbookStats.api.ts',
         status: 'new',
         note: 'Hooks + dummy data. Swap each fetch... body for its TODO http call later.',
       },
       {
-        path: 'src/features/reports/runbookStats/RunbookActivityView.tsx',
+        path: 'src/features/reports/runbookStats/stats/RunbookActivityView.tsx',
         status: 'new',
         note: 'Run overview, stage progress strip, expandable stages with Timeline / Logs.',
       },
       {
-        path: 'src/features/reports/runbookStats/RunbookDashboardPage.tsx',
+        path: 'src/features/reports/runbookStats/dashboard/RunbookDashboardPage.tsx',
         status: 'new',
         note: 'Dashboard page.',
       },
       {
-        path: 'src/features/reports/runbookStats/RunbookStatsPage.tsx',
+        path: 'src/features/reports/runbookStats/stats/RunbookStatsPage.tsx',
         status: 'new',
         note: 'Stats page: Tools Name / Runbook / Submit, then the activity view.',
       },

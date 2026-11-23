@@ -55,9 +55,9 @@ export const PAGE_REGISTRY: Record<string, PageEntry> = {
     form: lazy(() => import('@/features/configurations/dataSources/DataSourceFormPage')),
   },
   [ROUTES.runbookDashboard]: {
-    list: lazy(() => import('@/features/reports/runbookStats/RunbookDashboardPage')),
+    list: lazy(() => import('@/features/reports/runbookStats/dashboard/RunbookDashboardPage')),
   },
   [ROUTES.runbookStats]: {
-    list: lazy(() => import('@/features/reports/runbookStats/RunbookStatsPage')),
+    list: lazy(() => import('@/features/reports/runbookStats/stats/RunbookStatsPage')),
   },
 };
