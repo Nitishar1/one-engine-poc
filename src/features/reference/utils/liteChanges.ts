@@ -25,6 +25,21 @@ export interface LiteUpdate {
 export const LITE_UPDATES: LiteUpdate[] = [
   {
     date: '23 Nov 2026',
+    title: 'Colourful Runbook Dashboard',
+    summary:
+      'The Runbook Dashboard now uses colour: gradient tiles with white text, green / red ' +
+      'stacked bars for daily runs, a multi-colour donut, coloured ranking and recent-run badges.',
+    pages: [{ name: 'Reports > Runbook Stats > Dashboard', status: 'changed' }],
+    files: [
+      {
+        path: 'src/features/reports/runbookStats/RunbookDashboardPage.tsx',
+        status: 'changed',
+        note: 'Whole file replaced (colour palette at the top).',
+      },
+    ],
+  },
+  {
+    date: '23 Nov 2026',
     title: 'Reports > Runbook Stats: Dashboard and Stats pages',
     summary:
       'Two new pages under Reports > Runbook Stats, with dummy data for now (in ' +
