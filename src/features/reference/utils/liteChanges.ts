@@ -32,7 +32,8 @@ export const LITE_UPDATES: LiteUpdate[] = [
       'Created / Modified replaced by Execution Start Time, Execution End Time and Executed By. ' +
       'Pop-up: Processes tab (START / END show only their date and time; other processes ' +
       'expand to inputs / output) and a Logs tab like the old OETimeLineReport page. Request ' +
-      'types are Web and Scheduled; Executed By is system for Web and scheduler for Scheduled.',
+      'types are All / Web / Scheduled (All by default); Executed By is system for Web and ' +
+      'scheduler for Scheduled.',
     pages: [{ name: 'Reports > Runbook Stats > Stats', status: 'changed' }],
     files: [
       {

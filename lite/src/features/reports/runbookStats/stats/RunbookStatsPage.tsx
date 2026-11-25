@@ -2,9 +2,9 @@
  * Reports > Runbook Stats > Stats ("Runbook Execution Details").
  *
  * Functionality:
- * - Filter: Runbook (multi-select with "All runbooks"), Request Type (optional, empty = all),
+ * - Filter: Runbook (multi-select with "All runbooks"), Request Type (All / Web / Scheduled),
  *   From Date and To Date (required, default the last 30 days), then Search. The searched
- *   filter is kept in the URL (?runbooks=1,3&requestType=Incident&from=...&to=...), so a reload
+ *   filter is kept in the URL (?runbooks=1,3&requestType=Web&from=...&to=...), so a reload
  *   or a Dashboard link (?runbook=1) shows it again.
  * - Overview of the result: total runs, runbooks, success / failed / running, success rate,
  *   status bar, runs by request type and by monitoring tool.
@@ -41,6 +41,7 @@ import { StatusTag } from '@/components/common/StatusTag';
 import { formatDateTime } from '@/utils/formatters';
 import { useRequestTypes, useRunbooks, useRunbookTriggers } from './runbookStats.api';
 import {
+  ALL_REQUEST_TYPES,
   ALL_RUNBOOKS,
   statsFilterSchema,
   type RunbookTrigger,
@@ -209,7 +210,7 @@ type StatusFilter = 'All' | TriggerStatus;
 /** Default filter: all runbooks and request types, last 30 days. */
 const defaultFilter = (): StatsFilterValues => ({
   runbookIds: [ALL_RUNBOOKS],
-  requestType: '',
+  requestType: ALL_REQUEST_TYPES,
   fromDate: dayjs().subtract(30, 'day').format(DAY),
   toDate: dayjs().format(DAY),
 });
@@ -224,7 +225,7 @@ function nextRunbookSelection(previous: string[], next: string[]) {
   return next.filter((v) => v !== ALL_RUNBOOKS);
 }
 
-/** Filter <-> URL (?runbooks=1,3&requestType=Incident&from=...&to=...). */
+/** Filter <-> URL (?runbooks=1,3&requestType=Web&from=...&to=...). */
 function filterFromUrl(params: URLSearchParams): StatsFilterValues | undefined {
   // ?runbook=ID is the link from the Dashboard's Recent runs.
   const runbooks = params.get('runbooks') ?? params.get('runbook');
@@ -232,7 +233,7 @@ function filterFromUrl(params: URLSearchParams): StatsFilterValues | undefined {
   const defaults = defaultFilter();
   return {
     runbookIds: runbooks ? runbooks.split(',').filter(Boolean) : defaults.runbookIds,
-    requestType: params.get('requestType') ?? '',
+    requestType: params.get('requestType') || ALL_REQUEST_TYPES,
     fromDate: params.get('from') ?? defaults.fromDate,
     toDate: params.get('to') ?? defaults.toDate,
   };
@@ -439,10 +440,13 @@ export default function RunbookStatsPage() {
               control={control}
               name="requestType"
               label="Request Type"
-              placeholder="All request types"
-              allowClear
+              required
+              placeholder="Select Request Type"
               loading={requestTypes.isLoading}
-              options={(requestTypes.data ?? []).map((t) => ({ label: t, value: t }))}
+              options={[
+                { label: 'All', value: ALL_REQUEST_TYPES },
+                ...(requestTypes.data ?? []).map((t) => ({ label: t, value: t })),
+              ]}
             />
             {dateField('fromDate', 'From Date')}
             {dateField('toDate', 'To Date')}

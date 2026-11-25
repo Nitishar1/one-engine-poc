@@ -26,7 +26,7 @@ import type {
   TriggerProcess,
   TriggerStatus,
 } from './runbookStats.schema';
-import { ALL_RUNBOOKS } from './runbookStats.schema';
+import { ALL_REQUEST_TYPES, ALL_RUNBOOKS } from './runbookStats.schema';
 
 // ================================================================= DUMMY DATA (remove later)
 
@@ -266,7 +266,7 @@ const fetchRequestTypes = (_signal?: AbortSignal) => fakeDelay(REQUEST_TYPES, 25
 
 // TODO real API: return http.post<RunbookTrigger[]>('/runbookstats/executions', {
 //   runbookIds: filter.runbookIds.includes(ALL_RUNBOOKS) ? [] : filter.runbookIds.map(Number),
-//   requestType: filter.requestType, fromDate: filter.fromDate, toDate: filter.toDate,
+//   requestType: filter.requestType === ALL_REQUEST_TYPES ? '' : filter.requestType, fromDate: filter.fromDate, toDate: filter.toDate,
 // }, { signal });
 const fetchTriggers = (filter: StatsFilterValues, _signal?: AbortSignal) => {
   const all = filter.runbookIds.includes(ALL_RUNBOOKS);
@@ -275,7 +275,7 @@ const fetchTriggers = (filter: StatsFilterValues, _signal?: AbortSignal) => {
       const day = dayjs(t.executionStartTime).format('YYYY-MM-DD');
       return (
         (all || filter.runbookIds.includes(String(t.runbookID))) &&
-        (!filter.requestType || t.requestType === filter.requestType) &&
+        (filter.requestType === ALL_REQUEST_TYPES || t.requestType === filter.requestType) &&
         day >= filter.fromDate &&
         day <= filter.toDate
       );

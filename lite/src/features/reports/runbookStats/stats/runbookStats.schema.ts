@@ -65,12 +65,15 @@ export interface RunbookOption {
 /** Value of the "All runbooks" choice in the Runbook multi-select. */
 export const ALL_RUNBOOKS = 'all';
 
+/** Value of the "All" choice in the Request Type filter. */
+export const ALL_REQUEST_TYPES = 'all';
+
 export const statsFilterSchema = z
   .object({
     /** ['all'] or one or more runbook ids. */
     runbookIds: z.array(z.string()).min(1, 'Select All or at least one runbook'),
-    /** '' = all request types. */
-    requestType: z.string(),
+    /** 'all' or one request type (Web / Scheduled). */
+    requestType: z.string().min(1, 'Request Type is required'),
     /** YYYY-MM-DD */
     fromDate: z.string().min(1, 'From Date is required'),
     toDate: z.string().min(1, 'To Date is required'),
