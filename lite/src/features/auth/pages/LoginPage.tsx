@@ -58,37 +58,7 @@ const CHIPS: Array<[LucideIcon, number, number, number]> = [
   [Server, 21, 88, 2.6],
 ];
 
-/** Side profile of a head facing right, in a 410 x 520 box. */
-const HEAD_PATH =
-  'M120 40 C200 0 320 20 360 110 C380 160 372 200 380 232 L406 292 C410 302 400 306 386 310 ' +
-  'C393 330 386 344 376 350 C383 365 376 380 361 386 C351 410 321 421 290 416 ' +
-  'C270 440 265 480 262 520 L90 520 C110 450 100 400 70 360 C20 300 10 200 40 130 ' +
-  'C60 80 90 55 120 40 Z';
-
-/** Points spread over two brain-shaped lobes, each linked to its three nearest neighbours. */
-const BRAIN = (() => {
-  let seed = 7;
-  const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
-  const points: Array<[number, number]> = [];
-  while (points.length < 110) {
-    const x = (random() * 2 - 1) * 125;
-    const y = (random() * 2 - 1) * 80;
-    const inLobe = (cx: number) => ((x - cx) / 72) ** 2 + (y / 78) ** 2 <= 1;
-    if (inLobe(-50) || inLobe(50)) points.push([Math.round(x), Math.round(y)]);
-  }
-  const links: Array<[number, number]> = [];
-  points.forEach(([x, y], i) => {
-    points
-      .map(([px, py], j) => [j, (px - x) ** 2 + (py - y) ** 2] as const)
-      .filter(([j]) => j !== i)
-      .sort((a, b) => a[1] - b[1])
-      .slice(0, 3)
-      .forEach(([j]) => links.push([i, j]));
-  });
-  return { points, links };
-})();
-
-/** Background layers: stars, network links and nodes, particle head, brain, floating cards. */
+/** Background layers: aurora lights, fading grid, stars, network links and nodes, floating cards. */
 function LoginBackground() {
   const nodes: Array<[number, number]> = [
     [180, 150],
@@ -104,6 +74,13 @@ function LoginBackground() {
   ];
   return (
     <>
+      <div className="oe-login-aurora" aria-hidden>
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="oe-login-grid" aria-hidden />
       <div className="oe-login-stars" aria-hidden />
       <svg
         className="oe-login-network"
@@ -111,53 +88,6 @@ function LoginBackground() {
         preserveAspectRatio="xMidYMid slice"
         aria-hidden
       >
-        <defs>
-          {/* Tiny dots that fill the head, like a particle scan. */}
-          <pattern id="oe-login-dots" width="7" height="7" patternUnits="userSpaceOnUse">
-            <circle cx="3.5" cy="3.5" r="1.15" fill="#7dd3fc" />
-          </pattern>
-          <radialGradient id="oe-login-head-glow" cx="62%" cy="42%" r="70%">
-            <stop offset="0" stopColor="#38bdf8" stopOpacity="0.55" />
-            <stop offset="0.55" stopColor="#2563eb" stopOpacity="0.22" />
-            <stop offset="1" stopColor="#1e3a8a" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="oe-login-head-fade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0.6" stopColor="#fff" />
-            <stop offset="1" stopColor="#fff" stopOpacity="0" />
-          </linearGradient>
-          <mask id="oe-login-head-mask">
-            <rect x="-50" y="-50" width="520" height="620" fill="url(#oe-login-head-fade)" />
-          </mask>
-        </defs>
-
-        {/* Glowing particle head in profile (facing the form) with scan rings behind it. */}
-        <g className="oe-login-head" transform="translate(10 250) scale(0.98)">
-          {[70, 105, 140].map((r) => (
-            <circle key={r} className="oe-login-ring" cx="95" cy="235" r={r} />
-          ))}
-          <g mask="url(#oe-login-head-mask)">
-            <path d={HEAD_PATH} fill="url(#oe-login-head-glow)" />
-            <path d={HEAD_PATH} fill="url(#oe-login-dots)" opacity="0.32" />
-            <path d={HEAD_PATH} className="oe-login-head-outline" />
-          </g>
-        </g>
-
-        {/* Brain-like network of glowing points. */}
-        <g className="oe-login-brain" transform="translate(1150 640)">
-          {BRAIN.links.map(([a, b]) => (
-            <line
-              key={`${a}-${b}`}
-              x1={BRAIN.points[a][0]}
-              y1={BRAIN.points[a][1]}
-              x2={BRAIN.points[b][0]}
-              y2={BRAIN.points[b][1]}
-            />
-          ))}
-          {BRAIN.points.map(([x, y], i) => (
-            <circle key={i} cx={x} cy={y} r={i % 5 === 0 ? 2.4 : 1.5} />
-          ))}
-        </g>
-
         {/* Dashed links between the floating cards. */}
         <path className="oe-login-link" d="M180 150 C 400 60, 520 90, 620 110" />
         <path className="oe-login-link" d="M620 110 C 820 160, 1000 60, 1180 140" />
@@ -203,8 +133,9 @@ function LoginBackground() {
  * Sign-in page.
  *
  * Functionality:
- * - Centred card on a deep blue background (glowing lights, drifting stars, a glowing particle head,
- *   a brain-like network, dashed links between nodes and floating "agent" cards). Same look in both themes.
+ * - Centred card on a deep blue background: slowly drifting aurora lights (blue / cyan / violet),
+ *   a fine grid fading out from the centre, stars, dashed links between nodes and floating
+ *   "agent" cards. Same look in both themes.
  * - Domain (from the API, retry on failure), user name, password and the terms checkbox, then
  *   Sign in. Version, copyright and Privacy Notice underneath. Labels are kept for screen readers; the fields show an icon and placeholder.
  * - The card always uses the dark antd theme so the fields read well on the blue background.

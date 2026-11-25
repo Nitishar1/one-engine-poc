@@ -140,14 +140,86 @@ body,
   isolation: isolate;
   overflow: hidden;
   color: #e7ecf5;
-  background:
-    radial-gradient(30% 40% at 22% 40%, rgba(56, 189, 248, 0.28), transparent 70%),
-    radial-gradient(45% 55% at 18% 35%, rgba(37, 99, 235, 0.4), transparent 70%),
-    radial-gradient(40% 45% at 85% 18%, rgba(6, 182, 212, 0.24), transparent 70%),
-    radial-gradient(35% 40% at 80% 72%, rgba(34, 211, 238, 0.16), transparent 70%),
-    radial-gradient(45% 50% at 95% 100%, rgba(99, 102, 241, 0.34), transparent 70%),
-    radial-gradient(40% 35% at 45% 105%, rgba(20, 184, 166, 0.28), transparent 70%),
-    linear-gradient(160deg, #02060f 0%, #061230 40%, #0a1d55 72%, #050d26 100%);
+  background: linear-gradient(165deg, #020617 0%, #061233 45%, #0a1a4a 75%, #040b22 100%);
+}
+
+/* Aurora: four large blurred lights drifting slowly (blue, cyan, violet, teal). */
+.oe-login-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.oe-login-aurora span {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  animation: oe-login-aurora 26s ease-in-out infinite alternate;
+}
+
+.oe-login-aurora span:nth-child(1) {
+  top: -18%;
+  left: -10%;
+  background: #2563eb;
+}
+
+.oe-login-aurora span:nth-child(2) {
+  top: -20%;
+  right: -12%;
+  background: #06b6d4;
+  opacity: 0.4;
+  animation-duration: 32s;
+  animation-delay: -8s;
+}
+
+.oe-login-aurora span:nth-child(3) {
+  bottom: -25%;
+  right: 5%;
+  background: #7c3aed;
+  opacity: 0.45;
+  animation-duration: 36s;
+  animation-delay: -14s;
+}
+
+.oe-login-aurora span:nth-child(4) {
+  bottom: -30%;
+  left: 10%;
+  background: #0d9488;
+  opacity: 0.35;
+  animation-duration: 30s;
+  animation-delay: -4s;
+}
+
+@keyframes oe-login-aurora {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(8vw, 6vh) scale(1.15);
+  }
+  100% {
+    transform: translate(-6vw, 10vh) scale(0.95);
+  }
+}
+
+/* Fine grid that fades out from the centre. */
+.oe-login-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 197, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 197, 255, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(60% 60% at 50% 50%, #000 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(60% 60% at 50% 50%, #000 20%, transparent 100%);
 }
 
 /* Starfield: three layers of tiny dots drifting slowly. */
@@ -161,17 +233,14 @@ body,
     radial-gradient(1px 1px at 120px 80px, rgba(165, 243, 252, 0.6), transparent),
     radial-gradient(1.4px 1.4px at 200px 160px, rgba(224, 231, 255, 0.55), transparent),
     radial-gradient(1px 1px at 60px 190px, rgba(191, 219, 254, 0.5), transparent),
-    radial-gradient(0.8px 0.8px at 160px 20px, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1.8px 1.8px at 90px 120px, rgba(125, 211, 252, 0.8), transparent),
-    radial-gradient(1px 1px at 30px 70px, rgba(255, 255, 255, 0.5), transparent);
+    radial-gradient(0.8px 0.8px at 160px 20px, rgba(255, 255, 255, 0.6), transparent);
   background-size:
     220px 220px,
     260px 260px,
     300px 300px,
     180px 180px,
-    240px 240px,
-    420px 420px,
-    140px 140px;
+    240px 240px;
+  opacity: 0.6;
   animation: oe-login-drift 120s linear infinite;
 }
 
@@ -215,52 +284,6 @@ body,
   50% {
     opacity: 0.35;
   }
-}
-
-/* Particle head: dotted fill, glowing outline, slow "breathing" and scan rings. */
-.oe-login-network .oe-login-head {
-  animation: oe-login-breathe 6s ease-in-out infinite;
-}
-
-@keyframes oe-login-breathe {
-  50% {
-    opacity: 0.75;
-  }
-}
-
-.oe-login-network .oe-login-head-outline {
-  fill: none;
-  stroke: rgba(125, 211, 252, 0.6);
-  stroke-width: 1.4;
-  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
-}
-
-.oe-login-network .oe-login-ring {
-  fill: none;
-  stroke: rgba(103, 232, 249, 0.2);
-  stroke-width: 1;
-  stroke-dasharray: 2 6;
-  animation: oe-login-dash 30s linear infinite;
-}
-
-/* Brain-like network: thin cyan links and glowing points. */
-.oe-login-network .oe-login-brain line {
-  stroke: rgba(103, 232, 249, 0.32);
-  stroke-width: 0.8;
-}
-
-.oe-login-network .oe-login-brain circle {
-  fill: #67e8f9;
-  filter: drop-shadow(0 0 4px rgba(103, 232, 249, 0.9));
-  animation: oe-login-pulse 4s ease-in-out infinite;
-}
-
-.oe-login-network .oe-login-brain circle:nth-child(3n) {
-  animation-delay: 1.3s;
-}
-
-.oe-login-network .oe-login-brain circle:nth-child(3n + 1) {
-  animation-delay: 2.6s;
 }
 
 /* Floating glass "agent" cards around the form. */
