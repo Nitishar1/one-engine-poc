@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { AppInput } from '@/components/common/AppInput';
 import { AppSelect } from '@/components/common/AppSelect';
+import { PrivacyNoticeModal } from '@/components/common/PrivacyNoticeModal';
 import { getAntdTheme } from '@/components/theme/antdTheme';
 import { ROUTES } from '@/config/routes';
 import { useAuthStore } from '@/stores/authStore';
@@ -235,6 +236,7 @@ export default function LoginPage() {
   const domains = useDomains();
   const login = useLogin();
   const [termsOpen, setTermsOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
 
   const { control, handleSubmit, resetField, setValue, getValues } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -394,11 +396,16 @@ export default function LoginPage() {
       <p className="m-0 mt-8 text-center text-[12px] text-slate-400">
         Version {APP_CONFIG.version} | Copyright &copy; {APP_CONFIG.copyrightYears}{' '}
         {APP_CONFIG.companyName} |{' '}
-        <a href={APP_CONFIG.privacyUrl} className="!text-cyan-300 hover:!underline">
+        <button
+          type="button"
+          onClick={() => setPrivacyOpen(true)}
+          className="cursor-pointer border-0 bg-transparent p-0 text-[12px] text-cyan-300 hover:underline"
+        >
           Privacy Notice
-        </a>
+        </button>
       </p>
 
+      <PrivacyNoticeModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
       <TermsModal
         open={termsOpen}
         onClose={() => setTermsOpen(false)}

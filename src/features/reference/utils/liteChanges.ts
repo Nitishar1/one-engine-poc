@@ -25,6 +25,35 @@ export interface LiteUpdate {
 export const LITE_UPDATES: LiteUpdate[] = [
   {
     date: '26 Nov 2026',
+    title: 'Privacy Notice opens in a pop-up',
+    summary:
+      'Clicking Privacy Notice (sign-in page and the footer of every page) opens a pop-up. ' +
+      'The text is a placeholder describing what the app does with data; replace it with the ' +
+      'official notice in PrivacyNoticeModal.tsx.',
+    pages: [
+      { name: 'Sign in', status: 'changed' },
+      { name: 'Footer (all pages)', status: 'changed' },
+    ],
+    files: [
+      {
+        path: 'src/components/common/PrivacyNoticeModal.tsx',
+        status: 'new',
+        note: 'The pop-up and its text (SECTIONS).',
+      },
+      {
+        path: 'src/features/auth/pages/LoginPage.tsx',
+        status: 'changed',
+        note: 'privacyOpen state, Privacy Notice is a button, <PrivacyNoticeModal> next to <TermsModal>.',
+      },
+      {
+        path: 'src/components/layout/AppFooter.tsx',
+        status: 'changed',
+        note: 'Same: Privacy Notice button opens <PrivacyNoticeModal>.',
+      },
+    ],
+  },
+  {
+    date: '26 Nov 2026',
     title: 'Fix: domain names not visible in the sign-in dropdown (light mode)',
     summary:
       'In light mode the domain list on the sign-in page was white with white text. The list ' +
