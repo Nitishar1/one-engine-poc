@@ -28,8 +28,9 @@ export const LITE_UPDATES: LiteUpdate[] = [
     title: 'New sign-in page: centred card on a deep blue AI background',
     summary:
       'The sign-in page is no longer split in two. Brand and form sit in the middle on a deep ' +
-      'blue background with slowly drifting aurora lights (blue / cyan / violet / teal), a ' +
-      'fine grid fading out from the centre, stars, dashed links and floating agent cards. ' +
+      'blue, colourful background: drifting aurora lights (blue, cyan, violet, teal, pink, ' +
+      'amber), a rotating colour halo behind the card, shooting stars, flowing gradient waves, ' +
+      'rising glowing bubbles, coloured nodes and floating agent cards in different colours. ' +
       'No logo above the name. The card has a glowing gradient ' +
       'border, fields with icons inside and one Sign in button (no SSO); Privacy Notice link ' +
       'under it. Same look in light and dark mode.',
@@ -38,12 +39,12 @@ export const LITE_UPDATES: LiteUpdate[] = [
       {
         path: 'src/features/auth/pages/LoginPage.tsx',
         status: 'changed',
-        note: 'Whole file: LOGIN_THEME, CHIPS, LoginBackground and the centred card.',
+        note: 'Whole file: LOGIN_THEME, CHIPS, BUBBLES, NODES, LoginBackground and the centred card.',
       },
       {
         path: 'src/styles/background.css',
         status: 'changed',
-        note: 'The "Sign-in page" section (to the end of the file) is replaced.',
+        note: 'Everything from the "Sign-in page" heading to the end of the file (incl. the colourful moving layers).',
       },
     ],
   },

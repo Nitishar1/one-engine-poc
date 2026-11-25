@@ -196,6 +196,28 @@ body,
   animation-delay: -4s;
 }
 
+.oe-login-aurora span:nth-child(5) {
+  top: 30%;
+  left: 55%;
+  width: 30vmax;
+  height: 30vmax;
+  background: #db2777;
+  opacity: 0.3;
+  animation-duration: 34s;
+  animation-delay: -20s;
+}
+
+.oe-login-aurora span:nth-child(6) {
+  top: 45%;
+  left: -12%;
+  width: 26vmax;
+  height: 26vmax;
+  background: #f59e0b;
+  opacity: 0.22;
+  animation-duration: 28s;
+  animation-delay: -12s;
+}
+
 @keyframes oe-login-aurora {
   0% {
     transform: translate(0, 0) scale(1);
@@ -275,8 +297,8 @@ body,
 }
 
 .oe-login-network .oe-login-node {
-  fill: #60a5fa;
-  filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.9));
+  /* fill / color come from the component (one colour per node). */
+  filter: drop-shadow(0 0 7px currentColor);
   animation: oe-login-pulse 3.2s ease-in-out infinite;
 }
 
@@ -302,6 +324,23 @@ body,
   animation: oe-login-float 7s ease-in-out infinite;
 }
 
+.oe-login-chip {
+  border-color: color-mix(in srgb, var(--chip, #93c5fd) 35%, transparent);
+  box-shadow: 0 0 24px -8px var(--chip, #93c5fd);
+}
+
+.oe-login-chip__icon {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--chip, #67e8f9);
+  background: color-mix(in srgb, var(--chip, #67e8f9) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chip, #67e8f9) 45%, transparent);
+}
+
 .oe-login-chip__bars {
   display: flex;
   flex-direction: column;
@@ -312,7 +351,11 @@ body,
   display: block;
   height: 5px;
   border-radius: 3px;
-  background: rgba(147, 197, 253, 0.35);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--chip, #93c5fd) 60%, transparent),
+    rgba(147, 197, 253, 0.2)
+  );
 }
 
 @keyframes oe-login-float {
@@ -403,4 +446,158 @@ body,
 
 .oe-login-card .oe-login-submit.ant-btn:hover {
   filter: brightness(1.08);
+}
+
+/* ------------------------------------------------------------------ */
+/* Sign-in page: colourful moving layers                               */
+/* ------------------------------------------------------------------ */
+/* Rainbow halo turning slowly behind the card. */
+.oe-login-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: 760px;
+  height: 760px;
+  margin: -380px 0 0 -380px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    rgba(34, 211, 238, 0.45),
+    rgba(99, 102, 241, 0.4),
+    rgba(236, 72, 153, 0.38),
+    rgba(245, 158, 11, 0.3),
+    rgba(52, 211, 153, 0.38),
+    rgba(34, 211, 238, 0.45)
+  );
+  filter: blur(70px);
+  opacity: 0.55;
+  mask-image: radial-gradient(circle, transparent 28%, #000 46%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle, transparent 28%, #000 46%, transparent 72%);
+  animation: oe-login-turn 24s linear infinite;
+}
+
+@keyframes oe-login-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Shooting stars: a bright head with a coloured tail, crossing every few seconds. */
+.oe-login-meteors {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.oe-login-meteors span {
+  position: absolute;
+  top: -10%;
+  width: 160px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffffff, rgba(56, 189, 248, 0.6), transparent);
+  transform: rotate(-35deg);
+  opacity: 0;
+  animation: oe-login-meteor 9s linear infinite;
+}
+
+.oe-login-meteors span:nth-child(1) {
+  left: 70%;
+}
+
+.oe-login-meteors span:nth-child(2) {
+  left: 35%;
+  background: linear-gradient(90deg, #ffffff, rgba(236, 72, 153, 0.6), transparent);
+  animation-delay: 3.2s;
+}
+
+.oe-login-meteors span:nth-child(3) {
+  left: 95%;
+  background: linear-gradient(90deg, #ffffff, rgba(167, 139, 250, 0.6), transparent);
+  animation-delay: 6.1s;
+}
+
+@keyframes oe-login-meteor {
+  0% {
+    opacity: 0;
+    transform: rotate(-35deg) translateX(0);
+  }
+  4% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0;
+    transform: rotate(-35deg) translateX(-700px);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-35deg) translateX(-700px);
+  }
+}
+
+/* Flowing gradient waves along the bottom. */
+.oe-login-waves {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 200%;
+  height: 200px;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: oe-login-wave 22s linear infinite;
+}
+
+.oe-login-wave {
+  fill: none;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.7));
+}
+
+.oe-login-wave--slow {
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+
+@keyframes oe-login-wave {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Glowing bubbles rising from the bottom (colour, size and speed set in the component). */
+.oe-login-bubble {
+  position: absolute;
+  bottom: -40px;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, currentColor 35%, transparent 72%);
+  box-shadow: 0 0 18px currentColor;
+  opacity: 0.7;
+  animation: oe-login-rise linear infinite;
+}
+
+@keyframes oe-login-rise {
+  0% {
+    transform: translate(0, 0) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate(30px, -55vh) scale(1);
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-20px, -112vh) scale(0.9);
+    opacity: 0;
+  }
 }

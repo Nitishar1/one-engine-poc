@@ -47,31 +47,55 @@ const LOGIN_THEME: ThemeConfig = (() => {
   };
 })();
 
-/** Floating glass cards: [icon, left %, top %, animation delay s]. Hidden on small screens. */
-const CHIPS: Array<[LucideIcon, number, number, number]> = [
-  [Bot, 7, 12, 0],
-  [Workflow, 40, 6, 1.2],
-  [Cpu, 78, 10, 2.1],
-  [BrainCircuit, 87, 30, 0.6],
-  [Network, 83, 50, 1.6],
-  [ShieldCheck, 76, 82, 0.9],
-  [Server, 21, 88, 2.6],
+/**
+ * Floating glass cards: [icon, colour, left %, top %, animation delay s]. Each card has its own
+ * colour. Hidden on small screens.
+ */
+const CHIPS: Array<[LucideIcon, string, number, number, number]> = [
+  [Bot, '#38bdf8', 7, 12, 0],
+  [Workflow, '#a78bfa', 40, 6, 1.2],
+  [Cpu, '#f472b6', 78, 10, 2.1],
+  [BrainCircuit, '#34d399', 87, 30, 0.6],
+  [Network, '#fbbf24', 83, 50, 1.6],
+  [ShieldCheck, '#22d3ee', 76, 82, 0.9],
+  [Server, '#fb7185', 21, 88, 2.6],
 ];
 
-/** Background layers: aurora lights, fading grid, stars, network links and nodes, floating cards. */
+/** Glowing bubbles rising across the screen: [colour, left %, size px, duration s, delay s]. */
+const BUBBLES: Array<[string, number, number, number, number]> = [
+  ['#38bdf8', 6, 14, 18, 0],
+  ['#a78bfa', 15, 22, 24, -6],
+  ['#f472b6', 27, 10, 16, -10],
+  ['#34d399', 36, 18, 22, -3],
+  ['#fbbf24', 48, 12, 20, -14],
+  ['#22d3ee', 58, 26, 28, -8],
+  ['#fb7185', 67, 14, 19, -2],
+  ['#818cf8', 76, 20, 25, -16],
+  ['#2dd4bf', 85, 12, 17, -5],
+  ['#e879f9', 93, 18, 23, -11],
+];
+
+/** Network nodes in the 1440 x 900 drawing (colour cycles through the palette). */
+const NODES: Array<[number, number]> = [
+  [180, 150],
+  [620, 110],
+  [1180, 140],
+  [150, 560],
+  [1260, 470],
+  [1150, 760],
+  [260, 800],
+  [470, 330],
+  [990, 330],
+  [720, 820],
+];
+const NODE_COLOURS = ['#38bdf8', '#a78bfa', '#f472b6', '#34d399', '#fbbf24'];
+
+/**
+ * Background layers, back to front: aurora lights, rotating colour halo behind the card, fading
+ * grid, stars, shooting stars, gradient waves, network links and nodes, rising bubbles,
+ * floating cards. All decorative (aria-hidden); motion stops with "reduce motion".
+ */
 function LoginBackground() {
-  const nodes: Array<[number, number]> = [
-    [180, 150],
-    [620, 110],
-    [1180, 140],
-    [150, 560],
-    [1260, 470],
-    [1150, 760],
-    [260, 800],
-    [470, 330],
-    [990, 330],
-    [720, 820],
-  ];
   return (
     <>
       <div className="oe-login-aurora" aria-hidden>
@@ -79,9 +103,45 @@ function LoginBackground() {
         <span />
         <span />
         <span />
+        <span />
+        <span />
       </div>
+      <div className="oe-login-halo" aria-hidden />
       <div className="oe-login-grid" aria-hidden />
       <div className="oe-login-stars" aria-hidden />
+      <div className="oe-login-meteors" aria-hidden>
+        <span />
+        <span />
+        <span />
+      </div>
+
+      <svg className="oe-login-waves" viewBox="0 0 2880 200" preserveAspectRatio="none" aria-hidden>
+        <defs>
+          <linearGradient id="oe-login-wave-a" x1="0" x2="1">
+            <stop offset="0" stopColor="#22d3ee" />
+            <stop offset="0.35" stopColor="#6366f1" />
+            <stop offset="0.7" stopColor="#ec4899" />
+            <stop offset="1" stopColor="#22d3ee" />
+          </linearGradient>
+          <linearGradient id="oe-login-wave-b" x1="0" x2="1">
+            <stop offset="0" stopColor="#a78bfa" />
+            <stop offset="0.5" stopColor="#34d399" />
+            <stop offset="1" stopColor="#a78bfa" />
+          </linearGradient>
+        </defs>
+        {/* Each path is two identical waves wide; sliding it by half loops seamlessly. */}
+        <path
+          className="oe-login-wave"
+          stroke="url(#oe-login-wave-a)"
+          d="M0 120 C 240 40, 480 200, 720 120 S 1200 40, 1440 120 S 1920 200, 2160 120 S 2640 40, 2880 120"
+        />
+        <path
+          className="oe-login-wave oe-login-wave--slow"
+          stroke="url(#oe-login-wave-b)"
+          d="M0 150 C 240 90, 480 210, 720 150 S 1200 90, 1440 150 S 1920 210, 2160 150 S 2640 90, 2880 150"
+        />
+      </svg>
+
       <svg
         className="oe-login-network"
         viewBox="0 0 1440 900"
@@ -98,25 +158,51 @@ function LoginBackground() {
         <path className="oe-login-link" d="M470 330 C 600 260, 860 260, 990 330" />
         <path className="oe-login-link" d="M260 800 C 420 880, 600 860, 720 820" />
         <path className="oe-login-link" d="M720 820 C 880 780, 1000 790, 1150 760" />
-        {nodes.map(([x, y], i) => (
+        {NODES.map(([x, y], i) => (
           <circle
             key={`${x}-${y}`}
             className="oe-login-node"
             cx={x}
             cy={y}
-            r={i % 3 === 0 ? 4 : 3}
-            style={{ animationDelay: `${(i * 0.4) % 3}s` }}
+            r={i % 3 === 0 ? 4.5 : 3.5}
+            style={{
+              fill: NODE_COLOURS[i % NODE_COLOURS.length],
+              color: NODE_COLOURS[i % NODE_COLOURS.length],
+              animationDelay: `${(i * 0.4) % 3}s`,
+            }}
           />
         ))}
       </svg>
-      {CHIPS.map(([Icon, left, top, delay]) => (
+
+      {BUBBLES.map(([colour, left, size, duration, delay]) => (
+        <span
+          key={`${colour}-${left}`}
+          className="oe-login-bubble"
+          style={{
+            left: `${left}%`,
+            width: size,
+            height: size,
+            color: colour,
+            animationDuration: `${duration}s`,
+            animationDelay: `${delay}s`,
+          }}
+          aria-hidden
+        />
+      ))}
+
+      {CHIPS.map(([Icon, colour, left, top, delay]) => (
         <div
           key={`${left}-${top}`}
           className="oe-login-chip hidden lg:flex"
-          style={{ left: `${left}%`, top: `${top}%`, animationDelay: `${delay}s` }}
+          style={{
+            left: `${left}%`,
+            top: `${top}%`,
+            animationDelay: `${delay}s`,
+            ['--chip' as string]: colour,
+          }}
           aria-hidden
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-300/30">
+          <span className="oe-login-chip__icon">
             <Icon size={16} />
           </span>
           <span className="oe-login-chip__bars">
@@ -133,9 +219,10 @@ function LoginBackground() {
  * Sign-in page.
  *
  * Functionality:
- * - Centred card on a deep blue background: slowly drifting aurora lights (blue / cyan / violet),
- *   a fine grid fading out from the centre, stars, dashed links between nodes and floating
- *   "agent" cards. Same look in both themes.
+ * - Centred card on a deep blue, colourful background: drifting aurora lights (blue, cyan,
+ *   violet, teal, pink, amber), a rotating colour halo behind the card, a fading grid, stars,
+ *   shooting stars, flowing gradient waves, coloured network nodes, rising glowing bubbles and
+ *   floating "agent" cards in different colours. Same look in both themes.
  * - Domain (from the API, retry on failure), user name, password and the terms checkbox, then
  *   Sign in. Version, copyright and Privacy Notice underneath. Labels are kept for screen readers; the fields show an icon and placeholder.
  * - The card always uses the dark antd theme so the fields read well on the blue background.
