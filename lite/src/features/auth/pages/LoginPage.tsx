@@ -316,6 +316,8 @@ export default function LoginPage() {
                 loading={domains.isLoading}
                 disabled={login.isPending}
                 notFoundContent="No domains found"
+                // The list opens inside the card so it keeps the card's dark colours in light mode.
+                getPopupContainer={(trigger) => trigger.closest('.oe-login-card') ?? document.body}
                 options={(domains.data ?? []).map((d) => ({ label: d, value: d }))}
               />
               <AppInput

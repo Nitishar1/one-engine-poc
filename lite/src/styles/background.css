@@ -435,6 +435,17 @@ body,
   color: transparent;
 }
 
+/* Domain list: opens inside the card (see LoginPage) and is always dark navy, so the names stay
+   readable in light mode too (the app-wide rule in themes.css uses the page theme's colour). */
+.oe-login-card .ant-select-dropdown {
+  border-color: rgba(147, 197, 253, 0.3);
+  background: #0c1a3d !important;
+}
+
+.oe-login-card .ant-select-dropdown .ant-select-item {
+  color: #eef2ff;
+}
+
 /* Sign in button: blue -> cyan gradient with a glow. */
 .oe-login-card .oe-login-submit.ant-btn {
   height: 46px;

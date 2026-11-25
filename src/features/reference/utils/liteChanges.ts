@@ -25,6 +25,26 @@ export interface LiteUpdate {
 export const LITE_UPDATES: LiteUpdate[] = [
   {
     date: '26 Nov 2026',
+    title: 'Fix: domain names not visible in the sign-in dropdown (light mode)',
+    summary:
+      'In light mode the domain list on the sign-in page was white with white text. The list ' +
+      'now opens inside the card and is always dark navy with light text.',
+    pages: [{ name: 'Sign in', status: 'changed' }],
+    files: [
+      {
+        path: 'src/features/auth/pages/LoginPage.tsx',
+        status: 'changed',
+        note: 'Domain AppSelect: new getPopupContainer line (2 lines).',
+      },
+      {
+        path: 'src/styles/background.css',
+        status: 'changed',
+        note: 'New ".oe-login-card .ant-select-dropdown" rules above the Sign in button styles.',
+      },
+    ],
+  },
+  {
+    date: '26 Nov 2026',
     title: 'New sign-in page: centred card on a deep blue AI background',
     summary:
       'The sign-in page is no longer split in two. Brand and form sit in the middle on a deep ' +
