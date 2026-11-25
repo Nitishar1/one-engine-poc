@@ -132,22 +132,252 @@ body,
 }
 
 /* ------------------------------------------------------------------ */
-/* Sign-in page                                                        */
+/* Sign-in page (features/auth/pages/LoginPage.tsx)                    */
 /* ------------------------------------------------------------------ */
-/* Form side: soft brand lighting in both themes. */
+/* Always deep blue (both themes): glowing lights over a dark navy gradient. */
 .oe-login-page {
-  background:
-    radial-gradient(55% 45% at 85% 0%, var(--oe-backdrop-primary), transparent 70%),
-    radial-gradient(40% 40% at 100% 100%, var(--oe-backdrop-secondary), transparent 70%),
-    radial-gradient(35% 35% at 45% 100%, var(--oe-backdrop-tertiary), transparent 70%),
-    var(--oe-page-background);
-}
-
-/* Brand panel (left half on large screens): deep blue in both themes. */
-.oe-login-brand {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   color: #e7ecf5;
   background:
-    radial-gradient(55% 45% at 90% 8%, rgba(34, 211, 238, 0.3), transparent 70%),
-    radial-gradient(60% 55% at 0% 100%, rgba(99, 102, 241, 0.42), transparent 70%),
-    linear-gradient(150deg, #0b1838 0%, #13308a 55%, #2156e0 100%);
+    radial-gradient(30% 40% at 22% 40%, rgba(56, 189, 248, 0.28), transparent 70%),
+    radial-gradient(45% 55% at 18% 35%, rgba(37, 99, 235, 0.4), transparent 70%),
+    radial-gradient(40% 45% at 85% 18%, rgba(6, 182, 212, 0.24), transparent 70%),
+    radial-gradient(35% 40% at 80% 72%, rgba(34, 211, 238, 0.16), transparent 70%),
+    radial-gradient(45% 50% at 95% 100%, rgba(99, 102, 241, 0.34), transparent 70%),
+    radial-gradient(40% 35% at 45% 105%, rgba(20, 184, 166, 0.28), transparent 70%),
+    linear-gradient(160deg, #02060f 0%, #061230 40%, #0a1d55 72%, #050d26 100%);
+}
+
+/* Starfield: three layers of tiny dots drifting slowly. */
+.oe-login-stars {
+  position: absolute;
+  inset: -50%;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.2px 1.2px at 20px 30px, rgba(191, 219, 254, 0.75), transparent),
+    radial-gradient(1px 1px at 120px 80px, rgba(165, 243, 252, 0.6), transparent),
+    radial-gradient(1.4px 1.4px at 200px 160px, rgba(224, 231, 255, 0.55), transparent),
+    radial-gradient(1px 1px at 60px 190px, rgba(191, 219, 254, 0.5), transparent),
+    radial-gradient(0.8px 0.8px at 160px 20px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.8px 1.8px at 90px 120px, rgba(125, 211, 252, 0.8), transparent),
+    radial-gradient(1px 1px at 30px 70px, rgba(255, 255, 255, 0.5), transparent);
+  background-size:
+    220px 220px,
+    260px 260px,
+    300px 300px,
+    180px 180px,
+    240px 240px,
+    420px 420px,
+    140px 140px;
+  animation: oe-login-drift 120s linear infinite;
+}
+
+@keyframes oe-login-drift {
+  to {
+    transform: translate3d(220px, 110px, 0);
+  }
+}
+
+/* Network lines, nodes and the neural globe (inline SVG). */
+.oe-login-network {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.oe-login-network .oe-login-link {
+  fill: none;
+  stroke: rgba(147, 197, 253, 0.28);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 7;
+  animation: oe-login-dash 18s linear infinite;
+}
+
+@keyframes oe-login-dash {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+.oe-login-network .oe-login-node {
+  fill: #60a5fa;
+  filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.9));
+  animation: oe-login-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes oe-login-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* Particle head: dotted fill, glowing outline, slow "breathing" and scan rings. */
+.oe-login-network .oe-login-head {
+  animation: oe-login-breathe 6s ease-in-out infinite;
+}
+
+@keyframes oe-login-breathe {
+  50% {
+    opacity: 0.75;
+  }
+}
+
+.oe-login-network .oe-login-head-outline {
+  fill: none;
+  stroke: rgba(125, 211, 252, 0.6);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+}
+
+.oe-login-network .oe-login-ring {
+  fill: none;
+  stroke: rgba(103, 232, 249, 0.2);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+  animation: oe-login-dash 30s linear infinite;
+}
+
+/* Brain-like network: thin cyan links and glowing points. */
+.oe-login-network .oe-login-brain line {
+  stroke: rgba(103, 232, 249, 0.32);
+  stroke-width: 0.8;
+}
+
+.oe-login-network .oe-login-brain circle {
+  fill: #67e8f9;
+  filter: drop-shadow(0 0 4px rgba(103, 232, 249, 0.9));
+  animation: oe-login-pulse 4s ease-in-out infinite;
+}
+
+.oe-login-network .oe-login-brain circle:nth-child(3n) {
+  animation-delay: 1.3s;
+}
+
+.oe-login-network .oe-login-brain circle:nth-child(3n + 1) {
+  animation-delay: 2.6s;
+}
+
+/* Floating glass "agent" cards around the form. */
+/* Shown with Tailwind (hidden lg:flex) so they stay off small screens. */
+.oe-login-chip {
+  position: absolute;
+  z-index: -1;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 14px;
+  background: rgba(15, 30, 70, 0.35);
+  backdrop-filter: blur(6px);
+  color: rgba(165, 243, 252, 0.85);
+  animation: oe-login-float 7s ease-in-out infinite;
+}
+
+.oe-login-chip__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.oe-login-chip__bars span {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(147, 197, 253, 0.35);
+}
+
+@keyframes oe-login-float {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* The form card: dark glass with an animated blue / cyan / violet gradient border. */
+.oe-login-card {
+  position: relative;
+  border-radius: 24px;
+  background: linear-gradient(160deg, rgba(10, 22, 52, 0.88), rgba(6, 14, 36, 0.92));
+  box-shadow:
+    0 30px 80px -20px rgba(2, 6, 23, 0.9),
+    0 0 60px -10px rgba(37, 99, 235, 0.45);
+  backdrop-filter: blur(14px);
+}
+
+.oe-login-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--oe-login-angle, 0deg),
+    #22d3ee,
+    #3b82f6,
+    #6366f1,
+    #a78bfa,
+    #38bdf8,
+    #22d3ee
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: oe-login-spin 8s linear infinite;
+}
+
+@property --oe-login-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes oe-login-spin {
+  to {
+    --oe-login-angle: 360deg;
+  }
+}
+
+/* Fields: labels stay for screen readers only; icon + placeholder show inside the input. */
+.oe-login-card .oe-login-field > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.oe-login-title {
+  background: linear-gradient(90deg, #e0f2fe, #93c5fd 45%, #67e8f9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.oe-login-tagline {
+  background: linear-gradient(90deg, #67e8f9, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Sign in button: blue -> cyan gradient with a glow. */
+.oe-login-card .oe-login-submit.ant-btn {
+  height: 46px;
+  border: 0;
+  font-weight: 600;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9 60%, #22d3ee) !important;
+  box-shadow: 0 10px 30px -8px rgba(37, 99, 235, 0.8);
+}
+
+.oe-login-card .oe-login-submit.ant-btn:hover {
+  filter: brightness(1.08);
 }

@@ -25,6 +25,29 @@ export interface LiteUpdate {
 export const LITE_UPDATES: LiteUpdate[] = [
   {
     date: '26 Nov 2026',
+    title: 'New sign-in page: centred card on a deep blue AI background',
+    summary:
+      'The sign-in page is no longer split in two. Brand and form sit in the middle on a deep ' +
+      'blue gradient with stars, a glowing particle head, a brain-like network, dashed links ' +
+      'and floating agent cards. No logo above the name. The card has a glowing gradient ' +
+      'border, fields with icons inside and one Sign in button (no SSO); Privacy Notice link ' +
+      'under it. Same look in light and dark mode.',
+    pages: [{ name: 'Sign in', status: 'changed' }],
+    files: [
+      {
+        path: 'src/features/auth/pages/LoginPage.tsx',
+        status: 'changed',
+        note: 'Whole file: LOGIN_THEME, CHIPS, HEAD_PATH, BRAIN, LoginBackground and the centred card.',
+      },
+      {
+        path: 'src/styles/background.css',
+        status: 'changed',
+        note: 'The "Sign-in page" section (to the end of the file) is replaced.',
+      },
+    ],
+  },
+  {
+    date: '26 Nov 2026',
     title: 'Runbook Execution Details: multi-select, request type, status filter, logs',
     summary:
       'Stats page title is now "Runbook Execution Details". Runbook is a multi-select with ' +
