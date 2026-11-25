@@ -24,6 +24,40 @@ export interface LiteUpdate {
 
 export const LITE_UPDATES: LiteUpdate[] = [
   {
+    date: '26 Nov 2026',
+    title: 'Runbook Execution Details: multi-select, request type, status filter, logs',
+    summary:
+      'Stats page title is now "Runbook Execution Details". Runbook is a multi-select with ' +
+      '"All runbooks"; new Request Type filter; the Runbook runs grid has a status filter. ' +
+      'Created / Modified replaced by Execution Start Time, Execution End Time and Executed By. ' +
+      'Pop-up: Processes tab (START / END show only their date and time; other processes ' +
+      'expand to inputs / output) and a Logs tab like the old OETimeLineReport page. Request ' +
+      'types are Web and Scheduled; Executed By is system for Web and scheduler for Scheduled.',
+    pages: [{ name: 'Reports > Runbook Stats > Stats', status: 'changed' }],
+    files: [
+      {
+        path: 'src/features/reports/runbookStats/stats/runbookStats.schema.ts',
+        status: 'changed',
+        note: 'Stats part: ALL_RUNBOOKS, runbookIds + requestType filter, execution times, ExecutedOn, TriggerLog.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/stats/runbookStats.api.ts',
+        status: 'changed',
+        note: 'From DUMMY_RUNBOOKS to the end: new dummy data, useRequestTypes, useTriggerLogs.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/stats/RunbookStatsPage.tsx',
+        status: 'changed',
+        note: 'Whole file: new filters, status filter on the grid, new columns, new title.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/stats/TriggerDetailsModal.tsx',
+        status: 'changed',
+        note: 'Whole file: Processes / Logs tabs.',
+      },
+    ],
+  },
+  {
     date: '25 Nov 2026',
     title: 'Runbook Stats page: date filter, overview, grid and process pop-up',
     summary:

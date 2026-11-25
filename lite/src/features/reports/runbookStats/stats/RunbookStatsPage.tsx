@@ -1,22 +1,23 @@
 /**
- * Reports > Runbook Stats > Stats.
+ * Reports > Runbook Stats > Stats ("Runbook Execution Details").
  *
  * Functionality:
- * - Filter: Runbook (optional, empty = all runbooks), From Date and To Date (required, default
- *   the last 30 days), then Search. The searched filter is kept in the URL
- *   (?runbook=1&from=2026-10-26&to=2026-11-25), so a reload or a Dashboard link shows it again.
+ * - Filter: Runbook (multi-select with "All runbooks"), Request Type (optional, empty = all),
+ *   From Date and To Date (required, default the last 30 days), then Search. The searched
+ *   filter is kept in the URL (?runbooks=1,3&requestType=Incident&from=...&to=...), so a reload
+ *   or a Dashboard link (?runbook=1) shows it again.
  * - Overview of the result: total runs, runbooks, success / failed / running, success rate,
  *   status bar, runs by request type and by monitoring tool.
- * - Grid: Runbook Trigger ID, Request Type, Monitoring Tool Name, Scheduler Name, Status, Logs,
- *   Created By, Modified By (+ Runbook and Created On), with search, sort and paging.
- * - Clicking a row opens a pop-up with the trigger's processes as a timeline; clicking a
- *   process shows its input parameters and output (TriggerDetailsModal).
+ * - Runbook runs grid with a status filter (All / Success / Failed / Running): Runbook Trigger
+ *   ID, Runbook, Request Type, Monitoring Tool Name, Scheduler Name, Status, Logs, Execution
+ *   Start Time, Execution End Time, Executed By; search, sort and paging.
+ * - Clicking a row opens a pop-up with the execution's processes and logs (TriggerDetailsModal).
  */
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DatePicker, Tooltip } from 'antd';
+import { DatePicker, Segmented, Select, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import {
@@ -38,8 +39,9 @@ import { FormField } from '@/components/common/FormField';
 import { PageHeader } from '@/components/common/PageHeader';
 import { StatusTag } from '@/components/common/StatusTag';
 import { formatDateTime } from '@/utils/formatters';
-import { useRunbooks, useRunbookTriggers } from './runbookStats.api';
+import { useRequestTypes, useRunbooks, useRunbookTriggers } from './runbookStats.api';
 import {
+  ALL_RUNBOOKS,
   statsFilterSchema,
   type RunbookTrigger,
   type StatsFilterValues,
@@ -200,6 +202,49 @@ function Overview({ rows }: { rows: RunbookTrigger[] }) {
   );
 }
 
+// ---------------------------------------------------------------- filter helpers
+
+type StatusFilter = 'All' | TriggerStatus;
+
+/** Default filter: all runbooks and request types, last 30 days. */
+const defaultFilter = (): StatsFilterValues => ({
+  runbookIds: [ALL_RUNBOOKS],
+  requestType: '',
+  fromDate: dayjs().subtract(30, 'day').format(DAY),
+  toDate: dayjs().format(DAY),
+});
+
+/**
+ * Runbook multi-select rule: picking "All" clears the single runbooks, picking a runbook
+ * clears "All".
+ */
+function nextRunbookSelection(previous: string[], next: string[]) {
+  const added = next.find((v) => !previous.includes(v));
+  if (added === ALL_RUNBOOKS) return [ALL_RUNBOOKS];
+  return next.filter((v) => v !== ALL_RUNBOOKS);
+}
+
+/** Filter <-> URL (?runbooks=1,3&requestType=Incident&from=...&to=...). */
+function filterFromUrl(params: URLSearchParams): StatsFilterValues | undefined {
+  // ?runbook=ID is the link from the Dashboard's Recent runs.
+  const runbooks = params.get('runbooks') ?? params.get('runbook');
+  if (!runbooks && !params.get('from')) return undefined;
+  const defaults = defaultFilter();
+  return {
+    runbookIds: runbooks ? runbooks.split(',').filter(Boolean) : defaults.runbookIds,
+    requestType: params.get('requestType') ?? '',
+    fromDate: params.get('from') ?? defaults.fromDate,
+    toDate: params.get('to') ?? defaults.toDate,
+  };
+}
+
+const filterToUrl = (f: StatsFilterValues) => ({
+  runbooks: f.runbookIds.join(','),
+  requestType: f.requestType,
+  from: f.fromDate,
+  to: f.toDate,
+});
+
 // ---------------------------------------------------------------- page
 
 const searchValues = (r: RunbookTrigger) => [
@@ -210,44 +255,45 @@ const searchValues = (r: RunbookTrigger) => [
   r.schedulerName,
   r.status,
   r.logs,
-  r.createdBy,
-  r.modifiedBy,
+  r.executedBy,
 ];
+
+const dateTimeCell = (v: string | null) => (
+  <span className="tabular-nums">{v ? formatDateTime(v) : 'Running...'}</span>
+);
 
 export default function RunbookStatsPage() {
   const [params, setParams] = useSearchParams();
-  // The searched filter lives in the URL; nothing loads until Search (or a link with ?from=).
-  const submitted = useMemo<StatsFilterValues | undefined>(() => {
-    const runbook = params.get('runbook');
-    const from = params.get('from');
-    const to = params.get('to');
-    if (!runbook && !from) return undefined;
-    return {
-      runbookId: runbook ?? '',
-      fromDate: from ?? dayjs().subtract(30, 'day').format(DAY),
-      toDate: to ?? dayjs().format(DAY),
-    };
-  }, [params]);
+  // The searched filter lives in the URL; nothing loads until Search (or a Dashboard link).
+  const submitted = useMemo(() => filterFromUrl(params), [params]);
 
   const runbooks = useRunbooks();
+  const requestTypes = useRequestTypes();
   const triggers = useRunbookTriggers(submitted);
   const [selected, setSelected] = useState<RunbookTrigger>();
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
 
   const { control, handleSubmit } = useForm<StatsFilterValues>({
     resolver: zodResolver(statsFilterSchema),
-    defaultValues: submitted ?? {
-      runbookId: '',
-      fromDate: dayjs().subtract(30, 'day').format(DAY),
-      toDate: dayjs().format(DAY),
-    },
+    defaultValues: submitted ?? defaultFilter(),
   });
 
   const onSearch = (f: StatsFilterValues) => {
-    const next = { runbook: f.runbookId, from: f.fromDate, to: f.toDate };
+    const next = filterToUrl(f);
+    setStatusFilter('All');
     if (JSON.stringify(next) === JSON.stringify(Object.fromEntries(params)))
       void triggers.refetch();
     else setParams(next);
   };
+
+  const rows = useMemo(
+    () => (triggers.data ?? []).filter((r) => statusFilter === 'All' || r.status === statusFilter),
+    [triggers.data, statusFilter],
+  );
+  const statusCount = (s: StatusFilter) =>
+    s === 'All'
+      ? (triggers.data?.length ?? 0)
+      : (triggers.data ?? []).filter((r) => r.status === s).length;
 
   const columns = useMemo<ColumnsType<RunbookTrigger>>(
     () => [
@@ -267,11 +313,6 @@ export default function RunbookStatsPage() {
         title: 'Status',
         dataIndex: 'status',
         width: 120,
-        filters: (['Success', 'Failed', 'Running'] as TriggerStatus[]).map((s) => ({
-          text: s,
-          value: s,
-        })),
-        onFilter: (value, row) => row.status === value,
         render: (s: TriggerStatus) => <StatusTag status={s} />,
       },
       {
@@ -285,16 +326,22 @@ export default function RunbookStatsPage() {
           </Tooltip>
         ),
       },
-      { title: 'Created By', dataIndex: 'createdBy', width: 120 },
-      { title: 'Modified By', dataIndex: 'modifiedBy', width: 120 },
       {
-        title: 'Created On',
-        dataIndex: 'createdOn',
-        width: 180,
+        title: 'Execution Start Time',
+        dataIndex: 'executionStartTime',
+        width: 190,
         defaultSortOrder: 'descend',
-        sorter: (a, b) => a.createdOn.localeCompare(b.createdOn),
-        render: (v: string) => <span className="tabular-nums">{formatDateTime(v)}</span>,
+        sorter: (a, b) => a.executionStartTime.localeCompare(b.executionStartTime),
+        render: dateTimeCell,
       },
+      {
+        title: 'Execution End Time',
+        dataIndex: 'executionEndTime',
+        width: 190,
+        sorter: (a, b) => (a.executionEndTime ?? '9').localeCompare(b.executionEndTime ?? '9'),
+        render: dateTimeCell,
+      },
+      { title: 'Executed By', dataIndex: 'executedBy', width: 130 },
     ],
     [],
   );
@@ -325,27 +372,77 @@ export default function RunbookStatsPage() {
     />
   );
 
+  const statusToolbar = (
+    <Segmented<StatusFilter>
+      value={statusFilter}
+      onChange={setStatusFilter}
+      options={(['All', 'Success', 'Failed', 'Running'] as StatusFilter[]).map((s) => ({
+        value: s,
+        label: (
+          <span className="flex items-center gap-1.5">
+            {s !== 'All' && (
+              <span className="h-2 w-2 rounded-full" style={{ background: STATUS_COLOUR[s] }} />
+            )}
+            {s} <span className="tabular-nums text-fg-muted">{statusCount(s)}</span>
+          </span>
+        ),
+      }))}
+    />
+  );
+
   return (
     <>
       <PageHeader
-        title="Runbook Stats"
-        description="Search runbook runs by runbook and date. Click a row to see its processes, inputs and outputs."
+        title="Runbook Execution Details"
+        description="Search runbook executions by runbook, request type and date. Click a row to see its processes and logs."
       />
 
       <form onSubmit={handleSubmit(onSearch)} noValidate className="mb-5">
         <AppCard bodyClassName="px-5 py-5">
-          <div className="grid grid-cols-1 items-start gap-x-5 gap-y-4 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_auto]">
+          <div className="grid grid-cols-1 items-start gap-x-5 gap-y-4 md:grid-cols-2 xl:grid-cols-[1.6fr_1fr_1fr_1fr_auto]">
+            <Controller
+              control={control}
+              name="runbookIds"
+              render={({ field, fieldState }) => (
+                <FormField
+                  label="Runbook"
+                  required
+                  htmlFor="field-runbookIds"
+                  error={fieldState.error?.message}
+                >
+                  <Select
+                    id="field-runbookIds"
+                    mode="multiple"
+                    className="!w-full"
+                    placeholder="Select runbooks"
+                    maxTagCount="responsive"
+                    loading={runbooks.isLoading}
+                    status={fieldState.error ? 'error' : undefined}
+                    showSearch={{ optionFilterProp: 'label' }}
+                    value={field.value}
+                    onChange={(next: string[]) =>
+                      field.onChange(nextRunbookSelection(field.value, next))
+                    }
+                    onBlur={field.onBlur}
+                    options={[
+                      { label: 'All runbooks', value: ALL_RUNBOOKS },
+                      ...(runbooks.data ?? []).map((r) => ({
+                        label: r.runbookName,
+                        value: String(r.runbookID),
+                      })),
+                    ]}
+                  />
+                </FormField>
+              )}
+            />
             <AppSelect
               control={control}
-              name="runbookId"
-              label="Runbook"
-              placeholder="All runbooks"
+              name="requestType"
+              label="Request Type"
+              placeholder="All request types"
               allowClear
-              loading={runbooks.isLoading}
-              options={(runbooks.data ?? []).map((r) => ({
-                label: r.runbookName,
-                value: String(r.runbookID),
-              }))}
+              loading={requestTypes.isLoading}
+              options={(requestTypes.data ?? []).map((t) => ({ label: t, value: t }))}
             />
             {dateField('fromDate', 'From Date')}
             {dateField('toDate', 'To Date')}
@@ -365,8 +462,8 @@ export default function RunbookStatsPage() {
         <AppCard>
           <EmptyState
             icon={Search}
-            title="Search runbook runs"
-            description="Choose a runbook (or leave it empty for all), pick the dates and press Search."
+            title="Search runbook executions"
+            description="Choose All or some runbooks, optionally a request type, pick the dates and press Search."
           />
         </AppCard>
       ) : triggers.error ? (
@@ -386,12 +483,15 @@ export default function RunbookStatsPage() {
             <AppTable<RunbookTrigger>
               rowKey="runbookTriggerID"
               columns={columns}
-              data={triggers.data}
+              data={triggers.data ? rows : undefined}
               loading={triggers.isFetching}
               searchValues={searchValues}
               searchPlaceholder="Search runs..."
-              emptyText="No runs in this date range"
-              scroll={{ x: 1880 }}
+              toolbar={statusToolbar}
+              emptyText={
+                statusFilter === 'All' ? 'No runs for this filter' : `No ${statusFilter} runs`
+              }
+              scroll={{ x: 1910 }}
               onRow={(row) => ({
                 onClick: () => setSelected(row),
                 onKeyDown: (e) => e.key === 'Enter' && setSelected(row),
