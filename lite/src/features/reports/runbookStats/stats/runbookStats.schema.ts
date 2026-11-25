@@ -3,16 +3,16 @@
  *
  * Functionality:
  * - RunbookDashboard: totals, repositories by type, daily runs, most-run runbooks, recent runs.
- * - RunbookTool / RunbookOption: the Tools Name and Runbook dropdowns on the Stats page.
- * - RunbookActivity: one runbook run, shown as an overview with expandable stages; each stage
- *   has its own timeline events and log lines.
- * - statsFilterSchema validates the Stats filter (Runbook is required).
- * Field names follow the OneEngine.Api style (xxxID) so the real API can replace the dummy data.
+ * - RunbookOption: the Runbook dropdown on the Stats page.
+ * - statsFilterSchema: Stats filter (Runbook optional, From / To dates required, From <= To).
+ * - RunbookTrigger: one row of the Stats grid (one time a runbook was triggered).
+ * - TriggerProcess: one step of a trigger, shown as a timeline in the details pop-up, with its
+ *   input parameters and output. Field names are exactly as the API sends them.
  */
+import dayjs from 'dayjs';
 import { z } from 'zod';
 
 export type RunStatus = 'Success' | 'Failed' | 'Running' | 'Skipped';
-export type LogLevel = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
 
 // ---------------------------------------------------------------- dashboard
 
@@ -55,61 +55,55 @@ export interface RunbookDashboard {
 
 // ---------------------------------------------------------------- stats filter
 
-export interface RunbookTool {
-  toolID: number;
-  toolName: string;
-}
-
-/** A run of a runbook; shown as "<runbookName>_<DD MMM YYYY>" like the old page. */
 export interface RunbookOption {
   runbookID: number;
   runbookName: string;
-  toolID: number;
-  executedOn: string;
 }
 
-export const statsFilterSchema = z.object({
-  toolId: z.string(),
-  runbookId: z.string().min(1, 'Runbook is required'),
-});
+export const statsFilterSchema = z
+  .object({
+    /** '' = all runbooks. */
+    runbookId: z.string(),
+    /** YYYY-MM-DD */
+    fromDate: z.string().min(1, 'From Date is required'),
+    toDate: z.string().min(1, 'To Date is required'),
+  })
+  .refine((f) => !f.fromDate || !f.toDate || !dayjs(f.toDate).isBefore(f.fromDate), {
+    path: ['toDate'],
+    message: 'To Date must be on or after From Date',
+  });
 
 export type StatsFilterValues = z.infer<typeof statsFilterSchema>;
 
-// ---------------------------------------------------------------- activity
+// ---------------------------------------------------------------- grid + pop-up
 
-/** One entry of a stage timeline, e.g. "OneEngine-Starting Runbook ExtractInformation". */
-export interface ActivityEvent {
-  eventID: number;
-  title: string;
-  message: string;
-  status: RunStatus;
-  occurredOn: string;
-}
+export type TriggerStatus = 'Success' | 'Failed' | 'Running';
 
-export interface LogLine {
-  loggedOn: string;
-  level: LogLevel;
-  message: string;
-}
-
-export interface ActivityStage {
-  stageID: number;
-  stageName: string;
-  status: RunStatus;
-  startedOn: string;
-  durationSeconds: number;
-  events: ActivityEvent[];
-  logs: LogLine[];
-}
-
-export interface RunbookActivity {
+/** One row of the Stats grid. */
+export interface RunbookTrigger {
+  runbookTriggerID: number;
   runbookID: number;
   runbookName: string;
-  toolName: string;
-  target: string;
-  triggeredBy: string;
-  status: RunStatus;
-  startedOn: string;
-  durationSeconds: number;
-  stages: ActivityStage[];
+  requestType: string;
+  monitoringToolName: string;
+  schedulerName: string;
+  status: TriggerStatus;
+  /** Short log / result message of the trigger. */
+  logs: string;
+  createdBy: string;
+  createdOn: string;
+  modifiedBy: string;
+  modifiedOn: string;
+}
+
+export interface ProcessParameter {
+  ParameterName: string;
+  ParameterValue: string;
+}
+
+/** One step of a trigger: [{ "ProcessName": "START", "inputs": [...], "output": "" }]. */
+export interface TriggerProcess {
+  ProcessName: string;
+  inputs: ProcessParameter[];
+  output: string;
 }

@@ -24,6 +24,39 @@ export interface LiteUpdate {
 
 export const LITE_UPDATES: LiteUpdate[] = [
   {
+    date: '25 Nov 2026',
+    title: 'Runbook Stats page: date filter, overview, grid and process pop-up',
+    summary:
+      'Stats page redone: Tools Name removed; filter is Runbook (optional) + From / To Date + ' +
+      'Search. Below it an overview (totals, status, by request type / monitoring tool) and a ' +
+      'grid of runbook runs. Clicking a row opens a pop-up with the processes as a timeline; ' +
+      'click a ProcessName for its input parameters and output. DELETE ' +
+      'stats/RunbookActivityView.tsx (no longer used).',
+    pages: [{ name: 'Reports > Runbook Stats > Stats', status: 'changed' }],
+    files: [
+      {
+        path: 'src/features/reports/runbookStats/stats/runbookStats.schema.ts',
+        status: 'changed',
+        note: 'Whole file: new filter rules (dates), RunbookTrigger, TriggerProcess, ProcessParameter.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/stats/runbookStats.api.ts',
+        status: 'changed',
+        note: 'Whole file: useRunbooks, useRunbookTriggers(filter), useTriggerProcesses(id) + dummy data.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/stats/RunbookStatsPage.tsx',
+        status: 'changed',
+        note: 'Whole file: filter, overview, grid; row click opens the pop-up.',
+      },
+      {
+        path: 'src/features/reports/runbookStats/stats/TriggerDetailsModal.tsx',
+        status: 'new',
+        note: 'Pop-up: trigger details and the process timeline with inputs / output.',
+      },
+    ],
+  },
+  {
     date: '23 Nov 2026',
     title: 'Runbook Stats split into dashboard / stats folders; colourful sidebar',
     summary:
